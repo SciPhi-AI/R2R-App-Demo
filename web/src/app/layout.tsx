@@ -9,9 +9,9 @@ import { Analytics } from '@vercel/analytics/react';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "SciPhi Search",
+  title: "SciPhi Basic RAG",
   description:
-    "Robust AI Powered Search.",
+    "Robust AI Powered RAG.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

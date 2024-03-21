@@ -20,7 +20,7 @@ export default async function handler(req, res) {
 
   console.log('jsonData = ', jsonData)
   try {
-    const externalApiResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/rag_completion/`, {
+    const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag_completion/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -21,12 +21,13 @@ export const parseStreaming = async (
   controller: AbortController,
   query: string,
   userId: string,
+  apiUrl: string,
   onSources: (value: string) => void,
   onMarkdown: (value: string) => void,
   onError?: (status: number) => void,
 ) => {
 
-  const response = await fetch(`/api/query?query=${query}&userId=${userId}`, {
+  const response = await fetch(`/api/query?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
     method: "GET",
     headers: {
       'Content-Type': 'application/json',

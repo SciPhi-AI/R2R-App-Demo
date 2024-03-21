@@ -4,7 +4,7 @@ import { parseStreaming } from "@/app/utils/parse-streaming";
 import { Annoyed } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 
-export const Result: FC<{ query: string; rid: string; userId: string, uploadedDocuments: string[] }> = ({ query, rid, userId, uploadedDocuments }) => {
+export const Result: FC<{ query: string; rid: string; userId: string, apiUrl: string, uploadedDocuments: string[] }> = ({ query, rid, userId, apiUrl, uploadedDocuments }) => {
   const [sources, setSources] = useState<string | null>(null);
   const [markdown, setMarkdown] = useState<string>("");
   const [error, setError] = useState<number | null>(null);
@@ -16,7 +16,7 @@ export const Result: FC<{ query: string; rid: string; userId: string, uploadedDo
     const debouncedParseStreaming = () => {
       clearTimeout(timeout); // Clear any existing timeout
       timeout = setTimeout(() => {
-        parseStreaming(controller, query, userId, setSources, setMarkdown, setError); // Pass userId to parseStreaming
+        parseStreaming(controller, query, userId, apiUrl, setSources, setMarkdown, setError); // Pass userId to parseStreaming
       }, 500); // Adjust the delay time as needed
     };
 
@@ -40,7 +40,7 @@ export const Result: FC<{ query: string; rid: string; userId: string, uploadedDo
           </div>
         </div>
       )} */}
-      {uploadedDocuments.length === 0 && (
+      {uploadedDocuments?.length === 0 && (
         <div className="absolute inset-4 flex items-center justify-center bg-white/40 backdrop-blur-sm">
           <div className="p-4 bg-white shadow-2xl rounded text-blue-500 font-medium flex gap-4">
             {/* <Annoyed></Annoyed> */}
