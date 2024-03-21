@@ -160,7 +160,7 @@ export default function SearchPage() {
               availableUserIds={availableUserIds}
               onUserIdChange={handleUserIdChange}
             ></Title>
-            <Result key={rid} query={query} rid={rid} userId={userId}></Result>
+            <Result key={rid} query={query} rid={rid} userId={userId} uploadedDocuments={uploadedDocuments}></Result>
           </div>
           <div className="h-80 pointer-events-none w-full backdrop-filter absolute bottom-0 bg-gradient-to-b from-transparent to-zinc-900 [mask-image:linear-gradient(to_top,zinc-800,transparent)]"></div>
           <div className="absolute inset-x-0 bottom-6 px-4 md:px-8">

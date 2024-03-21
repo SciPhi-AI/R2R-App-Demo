@@ -4,7 +4,7 @@ import { parseStreaming } from "@/app/utils/parse-streaming";
 import { Annoyed } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 
-export const Result: FC<{ query: string; rid: string; userId: string }> = ({ query, rid, userId }) => {
+export const Result: FC<{ query: string; rid: string; userId: string, uploadedDocuments: string[] }> = ({ query, rid, userId, uploadedDocuments }) => {
   const [sources, setSources] = useState<string | null>(null);
   const [markdown, setMarkdown] = useState<string>("");
   const [error, setError] = useState<number | null>(null);
@@ -32,16 +32,23 @@ export const Result: FC<{ query: string; rid: string; userId: string }> = ({ que
     <div className="flex flex-col gap-8">
       <Answer markdown={markdown} sources={sources}></Answer>
       <Sources sources={sources}></Sources>
-      {error && (
+      {/* {error && (
         <div className="absolute inset-4 flex items-center justify-center bg-white/40 backdrop-blur-sm">
           <div className="p-4 bg-white shadow-2xl rounded text-blue-500 font-medium flex gap-4">
             <Annoyed></Annoyed>
-            {error === 429
-              ? "Sorry, you have made too many requests recently, try again later."
-              : "Sorry, we might be overloaded, try again later."}
+            Sorry, you have made too many requests recently, try again later.
+          </div>
+        </div>
+      )} */}
+      {uploadedDocuments.length === 0 && (
+        <div className="absolute inset-4 flex items-center justify-center bg-white/40 backdrop-blur-sm">
+          <div className="p-4 bg-white shadow-2xl rounded text-blue-500 font-medium flex gap-4">
+            {/* <Annoyed></Annoyed> */}
+            Please upload atleast one document to submit queries.
           </div>
         </div>
       )}
+
     </div>
   );
 };
