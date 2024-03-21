@@ -1,4 +1,4 @@
 export const getSearchUrl = (query: string, search_uuid: string) => {
-  const prefix = "/search";
+  const prefix = "";
   return `${prefix}?q=${encodeURIComponent(query)}&rid=${search_uuid}`;
 };
