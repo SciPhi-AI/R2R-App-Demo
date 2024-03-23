@@ -52,9 +52,9 @@ export const Sources: FC<{ sources: string | null }> = ({ sources }) => {
           ) : (
             <div className="max-w-screen-sm">
               <Skeleton className="h-16 bg-zinc-200/80"></Skeleton>
-              <Skeleton className="h-16 bg-zinc-200/80"></Skeleton>
-              <Skeleton className="h-16 bg-zinc-200/80"></Skeleton>
-              <Skeleton className="h-16 bg-zinc-200/80"></Skeleton>
+              <Skeleton className="h-16 bg-zinc-200/80 mt-2"></Skeleton>
+              <Skeleton className="h-16 bg-zinc-200/80 mt-2"></Skeleton>
+              <Skeleton className="h-16 bg-zinc-200/80 mt-2"></Skeleton>
             </div>
           )}
         </div>
