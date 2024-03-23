@@ -21,7 +21,7 @@ export const parseStreaming = async (
   controller: AbortController,
   query: string,
   userId: string,
-  apiUrl: string,
+  apiUrl: string | undefined,
   onSources: (value: string) => void,
   onMarkdown: (value: string) => void,
   onError?: (status: number) => void,

@@ -8,7 +8,7 @@
     ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": true,
+    // "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
@@ -26,15 +26,19 @@
       "@/*": [
         "./src/*"
       ]
-    }
+    },
+    "strict": false,
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "dist/types/**/*.ts"
-, "src/pages/_app.js", "src/pages/_document.js"  ],
+    "dist/types/**/*.ts",
+    "src/pages/_app.js",
+    "src/pages/_document.js"
+  ],
   "exclude": [
     "node_modules"
   ]

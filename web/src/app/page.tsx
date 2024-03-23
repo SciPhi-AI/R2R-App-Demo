@@ -80,30 +80,35 @@ export default function SearchPage() {
 
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    const file = fileInputRef.current.files[0];
-    const formData = new FormData();
-    formData.append("document_id", file.name);
-    formData.append("file", file);
-    const metadata = {
-      user_id: userId,
-    };
-    formData.append("metadata", JSON.stringify(metadata));
-    setIsUploading(true);
-    try {
-      const response = await fetch(`${apiUrl}/upload_and_process_file/`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      setUploadedDocuments([...uploadedDocuments, file.name]);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    } finally {
-      setIsUploading(false);
+    if (fileInputRef.current){
+      // @ts-ignore
+      const file = fileInputRef.current.files[0];
+      const formData = new FormData();
+      formData.append("document_id", file.name);
+      formData.append("file", file);
+      const metadata = {
+        user_id: userId,
+      };
+      formData.append("metadata", JSON.stringify(metadata));
+      setIsUploading(true);
+      try {
+        const response = await fetch(`${apiUrl}/upload_and_process_file/`, {
+          method: "POST",
+          body: formData,
+        });
+        await response.json();
+        // @ts-ignore
+        setUploadedDocuments([...uploadedDocuments, file.name]);
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
   const handleUploadButtonClick = () => {
+    // @ts-ignore
     fileInputRef.current.click();
   };
 

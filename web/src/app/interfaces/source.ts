@@ -1,6 +1,8 @@
 export interface Source {
   title: string;
   snippet: string;
+  id: string;
+  score: number;
   link: string;
   isFamilyFriendly: boolean;
   displayUrl: string;
@@ -15,4 +17,5 @@ export interface Source {
     imageId: string;
   };
   isNavigational: boolean;
+  metadata: any;
 }
