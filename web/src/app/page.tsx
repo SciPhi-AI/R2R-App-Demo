@@ -33,7 +33,7 @@ export default function SearchPage() {
 
   useEffect(() => {
     if (availableUserIds.length === 0) {
-      const newUserId = uuidv4();
+      const newUserId = "063edaf8-3e63-4cb9-a4d6-a855f36376c3";
       setUserId(newUserId);
       setAvailableUserIds([newUserId]);
     } else {
