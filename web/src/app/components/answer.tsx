@@ -35,7 +35,11 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
         markdown ? (
           <div className="prose prose-sm max-w-full text-zinc-300">
             <Markdown
+              // style={{ 'strong': 'inherit' }}
               components={{
+                strong: ({node, ...props}) => (
+                  <strong style={{ color: 'white', fontWeight: 'bold' }} {...props} />
+                ),
                 a: ({ node: _, ...props }) => {
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
@@ -108,9 +112,9 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
             </Markdown>
           </div>
         ) : (
-          <div className="flex flex-col gap-2">
-            <Skeleton className="max-w-sm h-4 bg-zinc-200"></Skeleton>
-            <Skeleton className="max-w-lg h-4 bg-zinc-200"></Skeleton>
+          <div className="flex flex-col gap-2 -mt-8">
+            {/* <Skeleton className="max-w-sm h-4 bg-zinc-200"></Skeleton> */}
+            <Skeleton className="max-w-lg h-4 bg-zinc-20"></Skeleton>
             <Skeleton className="max-w-2xl h-4 bg-zinc-200"></Skeleton>
             <Skeleton className="max-w-lg h-4 bg-zinc-200"></Skeleton>
             <Skeleton className="max-w-xl h-4 bg-zinc-200"></Skeleton>
