@@ -4,7 +4,7 @@ import { parseStreaming } from "@/app/utils/parse-streaming";
 import { Annoyed } from "lucide-react";
 import { FC, useEffect, useState } from "react";
 
-export const Result: FC<{ query: string; rid: string; userId: string, apiUrl: string, uploadedDocuments: string[] }> = ({ query, rid, userId, apiUrl, uploadedDocuments }) => {
+export const Result: FC<{ query: string; rid: string; userId: string, apiUrl: string | undefined, uploadedDocuments: string[] }> = ({ query, rid, userId, apiUrl, uploadedDocuments }) => {
   const [sources, setSources] = useState<string | null>(null);
   const [markdown, setMarkdown] = useState<string>("");
   const [error, setError] = useState<number | null>(null);
