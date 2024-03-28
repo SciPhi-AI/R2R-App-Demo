@@ -12,7 +12,9 @@ export const Result: FC<{ query: string; rid: string; userId: string, apiUrl: st
 
   useEffect(() => {
     const controller = new AbortController();
-
+    if (query === ""){
+      return;
+    }
     const debouncedParseStreaming = () => {
       clearTimeout(timeout); // Clear any existing timeout
       timeout = setTimeout(() => {
