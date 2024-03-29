@@ -1,4 +1,4 @@
-# RAG Pipeline Web Application
+# RAG Pipeline Web Application 
 
 This repository contains a web application that interacts with a deployed RAG (Retrieval Augmented Generation) pipeline built using the R2R framework and the SciPhi cloud platform. The web application allows users to upload documents, submit queries, and receive AI-generated answers based on the uploaded documents.
 
