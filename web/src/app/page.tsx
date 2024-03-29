@@ -121,7 +121,7 @@ export default function SearchPage() {
     <div className="absolute inset-0 bg-zinc-900">
       <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8 ">
         <label htmlFor="apiUrl" className="block text-sm font-medium text-zinc-300 ">
-          API URL
+          Pipeline Deployment URL
         </label>
         <input
           type="text"
