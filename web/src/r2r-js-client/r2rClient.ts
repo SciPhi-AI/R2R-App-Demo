@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+//@ts-ignore
 import FormData from 'form-data';
 
 export class R2RClient {
@@ -30,7 +31,7 @@ export class R2RClient {
       // Web application environment
       formData.append('file', fileOrPath);
     }
-    
+
     formData.append('document_id', documentId);
     formData.append('metadata', JSON.stringify(metadata));
     formData.append('settings', JSON.stringify(settings));
