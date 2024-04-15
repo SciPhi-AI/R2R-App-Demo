@@ -4,7 +4,6 @@ export const config = {
   runtime: "edge",
 };
 
-// pages/api/stream.js
 export default async function handler(req, res) {
   const queryObject = url.parse(req.url, true).query;
 

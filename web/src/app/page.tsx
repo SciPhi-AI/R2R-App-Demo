@@ -11,7 +11,6 @@ export default function SearchPage() {
   //@ts-ignore
   const query = decodeURIComponent(searchParams.get("q") || "");
   //@ts-ignore
-  const rid = decodeURIComponent(searchParams.get("rid") || "");
   const [apiUrl, setApiUrl] = useState(() => {
     const localApiUrl = localStorage?.getItem("apiUrl");
     return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
@@ -173,8 +172,6 @@ export default function SearchPage() {
             ))}
           </ul>
         </div>
-
-        {/* Main content */}
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
           <div className="px-4 md:px-8 pt-6 pb-24 h-full overflow-auto">
@@ -185,9 +182,7 @@ export default function SearchPage() {
               onUserIdChange={handleUserIdChange}
             ></Title>
             <Result
-              key={rid}
               query={query}
-              rid={rid}
               userId={userId}
               apiUrl={apiUrl}
               uploadedDocuments={uploadedDocuments}
