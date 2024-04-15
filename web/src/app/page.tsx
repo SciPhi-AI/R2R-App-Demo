@@ -5,6 +5,7 @@ import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { R2RClient } from '../r2r-js-client';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -76,29 +77,21 @@ export default function SearchPage() {
       console.error("Error fetching user documents:", error);
     }
   };
+
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    if (fileInputRef.current){
-      // @ts-ignore
+    if (fileInputRef.current) {
       const file = fileInputRef.current.files[0];
-      const formData = new FormData();
-      formData.append("document_id", file.name);
-      formData.append("file", file);
       const metadata = {
         user_id: userId,
       };
-      formData.append("metadata", JSON.stringify(metadata));
       setIsUploading(true);
       try {
-        const response = await fetch(`${apiUrl}/upload_and_process_file/`, {
-          method: "POST",
-          body: formData,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        await response.json();
-        // @ts-ignore
+        // if (!apiUrl) {
+        //   throw 
+        // }
+        const client = new R2RClient(apiUrl);
+        await client.uploadFile(file.name, file, metadata);
         setUploadedDocuments([...uploadedDocuments, file.name]);
         alert("Success");
       } catch (error) {
@@ -109,6 +102,7 @@ export default function SearchPage() {
       }
     }
   };
+  
   const handleUploadButtonClick = () => {
     // @ts-ignore
     fileInputRef.current.click();

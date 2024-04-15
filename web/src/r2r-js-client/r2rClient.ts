@@ -1,6 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-// import FormData from 'form-data';
-// import fs from 'fs';
+import FormData from 'form-data';
 
 export class R2RClient {
   private baseUrl: string;
@@ -9,25 +8,43 @@ export class R2RClient {
     this.baseUrl = baseUrl;
   }
 
-  // async uploadAndProcessFile(
-  //   documentId: string,
-  //   filePath: string,
-  //   metadata: Record<string, any> = {},
-  //   settings: Record<string, any> = {}
-  // ): Promise<any> {
-  //   const url = `${this.baseUrl}/upload_and_process_file/`;
-  //   const formData = new FormData();
-  //   formData.append('file', fs.createReadStream(filePath));
-  //   formData.append('document_id', documentId);
-  //   formData.append('metadata', JSON.stringify(metadata));
-  //   formData.append('settings', JSON.stringify(settings));
-
-  //   const response: AxiosResponse = await axios.post(url, formData, {
-  //     headers: formData.getHeaders(),
-  //   });
-  //   return response.data;
-  // }
-
+  async uploadFile(
+    documentId: string,
+    fileOrPath: File | string,
+    metadata: Record<string, any> = {},
+    settings: Record<string, any> = {}
+  ): Promise<any> {
+    const url = `${this.baseUrl}/upload_and_process_file/`;
+    const formData = new FormData();
+  
+    if (typeof fileOrPath === 'string') {
+      // Node.js environment
+      if (typeof window === 'undefined') {
+        // Check if running in a Node.js environment
+        const fs = require('fs');
+        formData.append('file', fs.createReadStream(fileOrPath));
+      } else {
+        throw new Error('Uploading a file path is not supported in web browsers.');
+      }
+    } else {
+      // Web application environment
+      formData.append('file', fileOrPath);
+    }
+    
+    formData.append('document_id', documentId);
+    formData.append('metadata', JSON.stringify(metadata));
+    formData.append('settings', JSON.stringify(settings));
+  
+    const config = {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    };
+  
+    const response: AxiosResponse = await axios.post(url, formData, config);
+    return response.data;
+  }
+  
   async addEntry(
     documentId: string,
     blobs: Record<string, string>,

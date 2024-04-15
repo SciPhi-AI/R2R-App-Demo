@@ -1,7 +1,6 @@
 import React, { FC, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSearchUrl } from "@/app/utils/get-search-url";
-import { nanoid } from "nanoid";
 import { ArrowRight } from "lucide-react";
 
 function debounce(func, wait) {
@@ -18,7 +17,7 @@ export const Search: FC = () => {
   const router = useRouter();
 
   const navigateToSearch = useCallback(debounce((searchValue) => {
-    router.push(getSearchUrl(encodeURIComponent(searchValue), nanoid()));
+    router.push(getSearchUrl(encodeURIComponent(searchValue)));
   }, 50), [router]); // Adjust the delay as needed
   
   const handleSubmit = (e) => {
