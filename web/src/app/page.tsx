@@ -77,7 +77,6 @@ export default function SearchPage() {
       console.error("Error fetching user documents:", error);
     }
   };
-
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
     if (fileInputRef.current){
@@ -96,17 +95,21 @@ export default function SearchPage() {
           method: "POST",
           body: formData,
         });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         await response.json();
         // @ts-ignore
         setUploadedDocuments([...uploadedDocuments, file.name]);
+        alert("Success");
       } catch (error) {
         console.error("Error uploading file:", error);
+        alert("Failed to upload file. Please try again.");
       } finally {
         setIsUploading(false);
       }
     }
   };
-
   const handleUploadButtonClick = () => {
     // @ts-ignore
     fileInputRef.current.click();
