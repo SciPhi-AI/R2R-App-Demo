@@ -80,18 +80,21 @@ export default function SearchPage() {
 
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    if (fileInputRef.current) {
+      // @ts-ignore
+      if (fileInputRef.current && fileInputRef.current.files.length) {
+      // @ts-ignore
       const file = fileInputRef.current.files[0];
       const metadata = {
         user_id: userId,
       };
       setIsUploading(true);
       try {
-        // if (!apiUrl) {
-        //   throw 
-        // }
+        if (!apiUrl) {
+          throw new Error('API URL is not defined');
+        }
         const client = new R2RClient(apiUrl);
         await client.uploadFile(file.name, file, metadata);
+        // @ts-ignore
         setUploadedDocuments([...uploadedDocuments, file.name]);
         alert("Success");
       } catch (error) {
