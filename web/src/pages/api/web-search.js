@@ -4,7 +4,6 @@ export const config = {
   runtime: "edge",
 };
 
-// pages/api/stream.js
 export default async function handler(req, res) {
   const queryObject = url.parse(req.url, true).query;
 
@@ -18,7 +17,6 @@ export default async function handler(req, res) {
     generation_config: { "stream": true },
   };
 
-  console.log('jsonData = ', jsonData)
   try {
     const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag_completion/`, {
       method: "POST",

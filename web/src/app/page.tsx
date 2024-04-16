@@ -5,13 +5,13 @@ import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { R2RClient } from '../r2r-js-client';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   //@ts-ignore
   const query = decodeURIComponent(searchParams.get("q") || "");
   //@ts-ignore
-  const rid = decodeURIComponent(searchParams.get("rid") || "");
   const [apiUrl, setApiUrl] = useState(() => {
     const localApiUrl = localStorage?.getItem("apiUrl");
     return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
@@ -77,28 +77,23 @@ export default function SearchPage() {
       console.error("Error fetching user documents:", error);
     }
   };
+
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    if (fileInputRef.current){
+      // @ts-ignore
+      if (fileInputRef.current && fileInputRef.current.files.length) {
       // @ts-ignore
       const file = fileInputRef.current.files[0];
-      const formData = new FormData();
-      formData.append("document_id", file.name);
-      formData.append("file", file);
       const metadata = {
         user_id: userId,
       };
-      formData.append("metadata", JSON.stringify(metadata));
       setIsUploading(true);
       try {
-        const response = await fetch(`${apiUrl}/upload_and_process_file/`, {
-          method: "POST",
-          body: formData,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!apiUrl) {
+          throw new Error('API URL is not defined');
         }
-        await response.json();
+        const client = new R2RClient(apiUrl);
+        await client.uploadFile(file.name, file, metadata);
         // @ts-ignore
         setUploadedDocuments([...uploadedDocuments, file.name]);
         alert("Success");
@@ -110,6 +105,7 @@ export default function SearchPage() {
       }
     }
   };
+  
   const handleUploadButtonClick = () => {
     // @ts-ignore
     fileInputRef.current.click();
@@ -173,8 +169,6 @@ export default function SearchPage() {
             ))}
           </ul>
         </div>
-
-        {/* Main content */}
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
           <div className="px-4 md:px-8 pt-6 pb-24 h-full overflow-auto">
@@ -185,9 +179,7 @@ export default function SearchPage() {
               onUserIdChange={handleUserIdChange}
             ></Title>
             <Result
-              key={rid}
               query={query}
-              rid={rid}
               userId={userId}
               apiUrl={apiUrl}
               uploadedDocuments={uploadedDocuments}

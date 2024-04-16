@@ -4,9 +4,8 @@ import { Source } from "@/app/interfaces/source";
 import { BookText } from "lucide-react";
 import { FC } from "react";
 
-const SourceItem: FC<{ source: Source; index: number }> = ({
+const SourceItem: FC<{ source: Source }> = ({
   source,
-  index,
 }) => {
   const { id, score, metadata } = source;
   
@@ -42,10 +41,9 @@ export const Sources: FC<{ sources: string | null }> = ({ sources }) => {
       content={
         <div className="grid gap-2">
           {parsedSources && parsedSources.length > 0 ? (
-            parsedSources.map((item, index) => (
+            parsedSources.map((item) => (
               <SourceItem
                 key={item.title}
-                index={index}
                 source={item}
               ></SourceItem>
             ))
