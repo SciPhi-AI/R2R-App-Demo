@@ -5,7 +5,7 @@ import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { R2RClient } from '../r2r-js-client';
+import { R2RClient } from '../../r2r-js-client';
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
