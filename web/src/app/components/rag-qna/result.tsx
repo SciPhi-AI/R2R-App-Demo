@@ -1,7 +1,7 @@
 import { Answer } from "@/app/components/answer";
-import { Sources } from "@/app/components/sources";
+import { Sources } from "@/app/components/rag-qna/sources";
 import { FC, useEffect, useState } from "react";
-import { LLM_START_TOKEN, LLM_END_TOKEN, SEARCH_START_TOKEN, SEARCH_END_TOKEN } from "../../r2r-js-client";
+import { LLM_START_TOKEN, LLM_END_TOKEN, SEARCH_START_TOKEN, SEARCH_END_TOKEN } from "../../../r2r-js-client";
 
 const markdownParse = (text: string) => {
   return text
