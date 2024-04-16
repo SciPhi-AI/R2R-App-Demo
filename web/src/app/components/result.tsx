@@ -20,7 +20,7 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
   let timeout: NodeJS.Timeout;
 
   const parseStreaming = async (query, userId, apiUrl) => {
-    const response = await fetch(`/api/query?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
+    const response = await fetch(`/api/web-search?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
       method: "GET",
       headers: {
         'Content-Type': 'application/json',

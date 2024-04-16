@@ -17,7 +17,6 @@ export default async function handler(req, res) {
     generation_config: { "stream": true },
   };
 
-  console.log('jsonData = ', jsonData)
   try {
     const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag_completion/`, {
       method: "POST",
