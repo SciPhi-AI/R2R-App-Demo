@@ -17,6 +17,7 @@ export default function SearchPage() {
     return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
   });
 
+  const [tooltipVisible, setTooltipVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
   const [userId, setUserId] = useState("");
   const [availableUserIds, setAvailableUserIds] = useState(() => {
@@ -118,22 +119,57 @@ export default function SearchPage() {
 
   return (
     <div className="absolute inset-0 bg-zinc-900">
-      <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8 ">
-        <label htmlFor="apiUrl" className="block text-sm font-medium text-zinc-300 ">
-          Pipeline Deployment URL
-        </label>
-        <input
-          type="text"
-          id="apiUrl"
-          name="apiUrl"
-          value={apiUrl}
-          onChange={(e) => handleApiUrlChange(e.target.value)}
-          className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-        />
-      </div>
+      
+      <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8">
+        <div className="flex items-center justify-start">
+          <button
+            onClick={() => window.history.back()}
+            className="flex items-center mt-5 text-white py-2 px-4 rounded-2xl bg-slate-600 hover:bg-slate-700"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <button
+            // Add your onClick handler for deployment logic here
+            onClick={() => window.location.href = 'https://app.sciphi.ai/deploy'}
+            className="flex items-center mt-5 mr-2 text-white py-2 px-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 ml-3"
+          >
+            Deploy Pipeline
+          </button>
+          <div className="flex-grow">
+            <label htmlFor="apiUrl" className="block text-sm font-medium text-zinc-300">
+              Pipeline Deployment URL
+              <span
+                className="inline-block ml-1 relative cursor-pointer"
+                onMouseEnter={() => setTooltipVisible(true)}
+                onMouseLeave={() => setTooltipVisible(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                </svg>
+                {tooltipVisible && (
+                  <div className="absolute left-6 -top-2 bg-zinc-800 text-zinc-200 px-2 py-1 rounded text-xs whitespace-nowrap z-10">
+                    Enter the URL where your pipeline is deployed
+                  </div>
+                )}
+              </span>
 
+            </label>
+            <input
+              type="text"
+              id="apiUrl"
+              name="apiUrl"
+              value={apiUrl}
+              onChange={(e) => handleApiUrlChange(e.target.value)}
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+            />
+          </div>
+        </div>
+      </div>
+      
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
-        {/* Sidebar */}
         <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
           <div className="flex items-center justify-between mb-6 pt-4">
             <h2 className="text-lg text-ellipsis font-bold text-blue-500">
