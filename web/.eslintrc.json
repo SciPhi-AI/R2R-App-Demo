@@ -6,6 +6,7 @@
   ],
   "rules": {
     "@next/next/no-img-element": "off",
-    "prettier/prettier": "off"
+    "prettier/prettier": "off",
+    "react/no-unescaped-entities": "off"
   }
 }

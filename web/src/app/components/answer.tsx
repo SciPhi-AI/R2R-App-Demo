@@ -56,6 +56,12 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                 strong: ({node, ...props}) => (
                   <strong style={{ color: 'white', fontWeight: 'bold' }} {...props} />
                 ),
+                p: ({ node, ...props }) => <p style={{ color: 'white' }} {...props} />,
+                li: ({ node, ...props }) => <li style={{ color: 'white' }} {...props} />,
+                blockquote: ({ node, ...props }) => <blockquote style={{ color: 'white' }} {...props} />,
+                em: ({ node, ...props }) => <em style={{ color: 'white' }} {...props} />,
+                code: ({ node, ...props }) => <code style={{ color: 'white' }} {...props} />,
+                pre: ({ node, ...props }) => <pre style={{ color: 'white' }} {...props} />,
                 a: ({ node: _, ...props }) => {
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
