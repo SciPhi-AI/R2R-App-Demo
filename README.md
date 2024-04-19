@@ -4,7 +4,7 @@ This repository contains a web application that interacts with a deployed RAG (R
 
 ## Prerequisites
 
-Before using the web application, ensure that you have deployed the RAG pipeline using the [R2R-basic-rag-template](https://github.com/SciPhi-AI/R2R-basic-rag-template) repository. Follow the instructions in the template's README to set up and configure the pipeline.
+Before using the web application, ensure that you have deployed the RAG pipeline using the [R2R-local-rag-prebuilt](https://github.com/SciPhi-AI/R2R-local-qna-rag-prebuilt) repository. Follow the instructions in the template's README to set up and configure the pipeline.
 
 ## Features
 
@@ -20,7 +20,7 @@ Before using the web application, ensure that you have deployed the RAG pipeline
 1. Clone this repository:
 
    ```
-   git clone git@github.com:SciPhi-AI/APP-basic-rag-template.git
+   git clone git@github.com:SciPhi-AI/R2R-App-Demo.git
    ```
 
 2. Navigate to the project directory:
