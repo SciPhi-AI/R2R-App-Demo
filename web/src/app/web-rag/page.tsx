@@ -47,7 +47,7 @@ export default function SearchPage() {
       <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8">
         <div className="flex items-center justify-start">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => window.location.href = "/"}
             className="flex items-center mt-5 text-white py-2 px-4 rounded-2xl bg-slate-600 hover:bg-slate-700"
             >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

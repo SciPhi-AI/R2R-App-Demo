@@ -123,7 +123,7 @@ export default function SearchPage() {
       <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8">
         <div className="flex items-center justify-start">
           <button
-            onClick={() => window.history.back()}
+            onClick={() => window.location.href = "/"}
             className="flex items-center mt-5 text-white py-2 px-4 rounded-2xl bg-slate-600 hover:bg-slate-700"
             >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -197,7 +197,8 @@ export default function SearchPage() {
             </form>
           </div>
           <div className="border-t border-white-600 mb-2"></div>
-          <ul>
+        <div className="flex-grow overflow-auto max-h-[calc(100vh-260px)]">
+          <ul className="">
             {uploadedDocuments?.map((document, index) => (
               <li key={index} className="text-zinc-300 mt-2">
                 {document}
@@ -205,6 +206,8 @@ export default function SearchPage() {
             ))}
           </ul>
         </div>
+      </div>
+
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
           <div className="px-4 md:px-8 pt-6 pb-24 h-full overflow-auto">
