@@ -8,7 +8,7 @@ const Index: React.FC = () => {
       <div className="flex flex-row space-x-4">
         {/* Link to rag-qna */}
         <Link href="/rag-qna" className="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-          RAG Q&A
+          Q&A RAG
         </Link>
         {/* Link to web-rag */}
         <Link href="/web-rag" className="btn bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
