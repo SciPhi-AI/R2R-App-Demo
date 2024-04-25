@@ -1,7 +1,9 @@
 import { Answer } from "@/app/components/answer";
-import { Sources } from "@/app/components/rag-qna/sources";
+import { Sources } from "@/app/components/hyde-rag/sources";
+import { HyDE } from "@/app/components/hyde-rag/hyde";
+
 import { FC, useEffect, useState } from "react";
-import { LLM_START_TOKEN, LLM_END_TOKEN, SEARCH_START_TOKEN, SEARCH_END_TOKEN } from "../../../r2r-js-client";
+import { LLM_START_TOKEN, LLM_END_TOKEN, SEARCH_START_TOKEN, SEARCH_END_TOKEN, METADATA_START_TOKEN, METADATA_END_TOKEN } from "../../../r2r-js-client";
 
 const markdownParse = (text: string) => {
   return text
@@ -15,14 +17,13 @@ const markdownParse = (text: string) => {
 
 export const Result: FC<{ query: string; userId: string, apiUrl: string | undefined, uploadedDocuments: string[] }> = ({ query, userId, apiUrl, uploadedDocuments }) => {
   const [sources, setSources] = useState<string | null>(null);
+  console.log('sources = ', sources)
+  const [answers, setAnswers] = useState<string[]>([]);
   const [markdown, setMarkdown] = useState<string>("");
   const [error, setError] = useState<number | null>(null);
-
   let timeout: NodeJS.Timeout;
 
   const parseStreaming = async (query, userId, apiUrl) => {
-    setSources(null);
-    setMarkdown("");
     const response = await fetch(`/api/rag-completion?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
       method: "GET",
       headers: {
@@ -49,9 +50,19 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
       const chunk = decoder.decode(value);
       sink += chunk;
   
+      if (sink.includes(METADATA_END_TOKEN)) {
+        let metadataContent = sink.split(METADATA_START_TOKEN)[1];
+        if (metadataContent !== undefined) {
+          metadataContent = metadataContent.split(METADATA_END_TOKEN)[0];
+          const metadata = JSON.parse(metadataContent);
+          setAnswers(metadata.answers);
+        }
+      }
+
       if (sink.includes(SEARCH_END_TOKEN)) {
         let results = sink.split(SEARCH_END_TOKEN)[0]
         results = results.replace(SEARCH_START_TOKEN, "");
+        console.log("results = ", results)
         setSources(results)
       }
   
@@ -95,6 +106,7 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
   return (
     <div className="flex flex-col gap-8">
       <Answer markdown={markdown} sources={sources}></Answer>
+      <HyDE answers={answers} />
       <Sources sources={sources}></Sources>
 
       {uploadedDocuments?.length === 0 && (

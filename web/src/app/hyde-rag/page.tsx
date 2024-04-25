@@ -1,5 +1,5 @@
 "use client";
-import { Result } from "@/app/components/rag-qna/result";
+import { Result } from "@/app/components/hyde-rag/result";
 import { Search } from "@/app/components/search";
 import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
