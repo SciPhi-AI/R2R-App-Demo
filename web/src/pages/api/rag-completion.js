@@ -9,7 +9,6 @@ export default async function handler(req, res) {
 
   const jsonData = {
     message: queryObject.query,
-    limit: 10,
     filters: {
       user_id: queryObject.userId
     },
