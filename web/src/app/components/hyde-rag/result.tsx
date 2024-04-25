@@ -24,6 +24,9 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
   let timeout: NodeJS.Timeout;
 
   const parseStreaming = async (query, userId, apiUrl) => {
+    setAnswers([]);
+    setSources(null);
+    setMarkdown("");
     const response = await fetch(`/api/rag-completion?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
       method: "GET",
       headers: {
