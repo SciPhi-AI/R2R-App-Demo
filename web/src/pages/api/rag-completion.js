@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const queryObject = url.parse(req.url, true).query;
 
   const jsonData = {
-    query: queryObject.query,
+    message: queryObject.query,
     limit: 10,
     filters: {
       user_id: queryObject.userId

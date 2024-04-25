@@ -89,7 +89,7 @@ export class R2RClient {
   ): Promise<any> {
     const url = `${this.baseUrl}/search/`;
     const data = {
-      message: query,
+      query: query,
       filters,
       search_limit: searchLimit,
       rerank_limit: rerankLimit,
