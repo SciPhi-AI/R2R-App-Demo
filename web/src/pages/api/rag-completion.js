@@ -16,6 +16,7 @@ export default async function handler(req, res) {
     generation_config: { "stream": true },
   };
 
+  console.log("trying to curl = ", `${queryObject.apiUrl}/rag_completion/`)
   try {
     const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag_completion/`, {
       method: "POST",
