@@ -14,6 +14,7 @@ export function Sidebar({userId, apiUrl, uploadedDocuments, setUploadedDocuments
           `${apiUrl}/get_user_documents/?user_id=${userId}`
         );
         const data = await response.json();
+        console.log('data.document_ids = ', data.document_ids);
         setUploadedDocuments(data.document_ids);
       } catch (error) {
         console.error("Error fetching user documents:", error);
@@ -22,7 +23,6 @@ export function Sidebar({userId, apiUrl, uploadedDocuments, setUploadedDocuments
 
     fetchUserDocuments();
   }, [userId]);
-
 
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
@@ -52,6 +52,23 @@ export function Sidebar({userId, apiUrl, uploadedDocuments, setUploadedDocuments
     }
   };
   
+  const deleteDocument = async (documentId) => {
+    try {
+      const encodedDocumentId = encodeURIComponent(documentId);
+      const response = await fetch(`${apiUrl}/filtered_deletion/?key=document_id&value=${encodedDocumentId}`, {
+          method: 'DELETE',
+      });
+        if (!response.ok) {
+            throw new Error('Failed to delete the document');
+        }
+        // Update the state to remove the deleted document
+        setUploadedDocuments(uploadedDocuments.filter(doc => doc !== documentId));
+        alert("Document deleted successfully.");
+    } catch (error) {
+        console.error("Error deleting document:", error);
+        alert("Failed to delete document. Please try again.");
+    }
+};
   const handleUploadButtonClick = () => {
     // @ts-ignore
     fileInputRef.current.click();
@@ -90,6 +107,13 @@ export function Sidebar({userId, apiUrl, uploadedDocuments, setUploadedDocuments
             {uploadedDocuments?.map((document, index) => (
                 <li key={index} className="text-zinc-300 mt-2">
                 {document}
+                <button
+                  onClick={() => deleteDocument(document)}
+                  className="bg-red-500 hover:bg-red-700 text-white font-bold pr-1 pl-1 rounded ml-1"
+                  disabled={isUploading}
+                  >
+                    x
+                </button>
                 </li>
             ))}
             </ul>
