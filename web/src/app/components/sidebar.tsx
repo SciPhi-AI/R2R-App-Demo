@@ -24,7 +24,6 @@ export function Sidebar({userId, apiUrl, uploadedDocuments, setUploadedDocuments
     fetchUserDocuments();
   }, [userId]);
 
-  console.log('uploadedDocuments = ', uploadedDocuments);
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
       // @ts-ignore

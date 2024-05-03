@@ -19,7 +19,6 @@ export default function QnaPage() {
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
-  console.log('uploadedDocuments = ', uploadedDocuments);
   const [userId, setUserId] = useState("");
   const [availableUserIds, setAvailableUserIds] = useState(() => {
     const localData = localStorage?.getItem("availableUserIds");
