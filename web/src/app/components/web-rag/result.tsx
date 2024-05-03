@@ -45,6 +45,7 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
       if (done) break;
       const chunk = decoder.decode(value);
       sink += chunk;
+
   
       if (sink.includes(SEARCH_END_TOKEN)) {
         let results = sink.split(SEARCH_END_TOKEN)[0]
@@ -83,6 +84,9 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
     debouncedParseStreaming();
 
     return () => {
+      setSources(null);
+      setMarkdown("");
+      
       controller.abort();
       clearTimeout(timeout);
     };

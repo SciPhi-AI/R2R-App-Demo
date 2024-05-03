@@ -1,13 +1,13 @@
 "use client";
 import { Result } from "@/app/components/qna-rag/result";
 import { Search } from "@/app/components/search";
+import { Sidebar } from "@/app/components/sidebar";
 import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { R2RClient } from '../../r2r-js-client';
 
-export default function SearchPage() {
+export default function QnaPage() {
   const searchParams = useSearchParams();
   //@ts-ignore
   const query = decodeURIComponent(searchParams.get("q") || "");
@@ -25,8 +25,6 @@ export default function SearchPage() {
     return localData ? JSON.parse(localData) : [];
   });
 
-  const fileInputRef = useRef(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("availableUserIds", JSON.stringify(availableUserIds));
@@ -42,22 +40,6 @@ export default function SearchPage() {
     }
   }, [availableUserIds]);
 
-  useEffect(() => {
-    const fetchUserDocuments = async () => {
-      try {
-        if (userId === "") return;
-        const response = await fetch(
-          `${apiUrl}/get_user_documents/?user_id=${userId}`
-        );
-        const data = await response.json();
-        setUploadedDocuments(data.document_ids);
-      } catch (error) {
-        console.error("Error fetching user documents:", error);
-      }
-    };
-
-    fetchUserDocuments();
-  }, [userId, apiUrl]);
 
   const handleUserIdChange = async (selectedUserId) => {
     if (selectedUserId === "new") {
@@ -67,50 +49,8 @@ export default function SearchPage() {
     } else {
       setUserId(selectedUserId);
     }
-
-    try {
-      const response = await fetch(
-        `${apiUrl}/get_user_documents/?user_id=${selectedUserId}`
-      );
-      const data = await response.json();
-      setUploadedDocuments(data.document_ids);
-    } catch (error) {
-      console.error("Error fetching user documents:", error);
-    }
   };
 
-  const handleDocumentUpload = async (event) => {
-    event.preventDefault();
-      // @ts-ignore
-      if (fileInputRef.current && fileInputRef.current.files.length) {
-      // @ts-ignore
-      const file = fileInputRef.current.files[0];
-      const metadata = {
-        user_id: userId,
-      };
-      setIsUploading(true);
-      try {
-        if (!apiUrl) {
-          throw new Error('API URL is not defined');
-        }
-        const client = new R2RClient(apiUrl);
-        await client.uploadFile(file.name, file, metadata);
-        // @ts-ignore
-        setUploadedDocuments([...uploadedDocuments, file.name]);
-        alert("Success");
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        alert("Failed to upload file. Please try again.");
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
-  
-  const handleUploadButtonClick = () => {
-    // @ts-ignore
-    fileInputRef.current.click();
-  };
 
   const handleApiUrlChange = (newApiUrl) => {
     setApiUrl(newApiUrl);
@@ -136,7 +76,11 @@ export default function SearchPage() {
             onClick={() => window.location.href = 'https://app.sciphi.ai/deploy'}
             className="flex items-center mt-5 mr-2 text-white py-2 px-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 ml-3"
           >
-            Deploy Pipeline
+            Deploy New Pipeline
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+
           </button>
           <div className="flex-grow">
             <label htmlFor="apiUrl" className="block text-sm font-medium text-zinc-300">
@@ -150,10 +94,10 @@ export default function SearchPage() {
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 {tooltipVisible && (
-                  <div style={{ width: '350px' }} className="absolute left-6 -top-2 bg-zinc-800 text-zinc-200 px-2 py-1 rounded text-xs z-10 pb-2 pt-2">
-                    Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy Pipeline" button and select `Q&A RAG`.
-                  </div>
-                )}
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+              )}
               </span>
 
             </label>
@@ -162,8 +106,9 @@ export default function SearchPage() {
               id="apiUrl"
               name="apiUrl"
               value={apiUrl}
+              disabled={true}
               onChange={(e) => handleApiUrlChange(e.target.value)}
-              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm cursor-not-allowed"
             />
           </div>
         </div>
@@ -171,41 +116,7 @@ export default function SearchPage() {
       
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
         <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
-          <div className="flex items-center justify-between mb-6 pt-4">
-            <h2 className="text-lg text-ellipsis font-bold text-blue-500">
-              Documents
-            </h2>
-            <form onSubmit={handleDocumentUpload}>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleDocumentUpload}
-              />
-              <button
-                type="button"
-                onClick={handleUploadButtonClick}
-                disabled={isUploading}
-                className={`pl-2 pr-2 text-white py-2 px-4 rounded ${
-                  isUploading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
-              >
-                {isUploading ? "Uploading..." : "Upload File"}
-              </button>
-            </form>
-          </div>
-          <div className="border-t border-white-600 mb-2"></div>
-        <div className="flex-grow overflow-auto max-h-[calc(100vh-260px)]">
-          <ul className="">
-            {uploadedDocuments?.map((document, index) => (
-              <li key={index} className="text-zinc-300 mt-2">
-                {document}
-              </li>
-            ))}
-          </ul>
-        </div>
+          <Sidebar apiUrl={apiUrl} userId={userId} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments}/>
       </div>
 
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">

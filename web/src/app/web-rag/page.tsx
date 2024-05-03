@@ -4,6 +4,7 @@ import { Search } from "@/app/components/search";
 import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Sidebar } from "@/app/components/sidebar";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ export default function SearchPage() {
     const localApiUrl = localStorage?.getItem("apiUrl");
     return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
   });
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [userId, setUserId] = useState("");
@@ -60,7 +62,11 @@ export default function SearchPage() {
             onClick={() => window.location.href = 'https://app.sciphi.ai/deploy'}
             className="flex items-center mt-5 mr-2 text-white py-2 px-4 rounded-2xl bg-indigo-500 hover:bg-indigo-600 ml-3"
           >
-            Deploy Pipeline
+            Deploy New Pipeline
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+
           </button>
           <div className="flex-grow">
             <label htmlFor="apiUrl" className="block text-sm font-medium text-zinc-300">
@@ -75,7 +81,7 @@ export default function SearchPage() {
                 </svg>
                 {tooltipVisible && (
                   <div style={{ width: '350px' }} className="absolute left-6 -top-2 bg-zinc-800 text-zinc-200 px-2 py-1 rounded text-xs z-10 pb-2 pt-2">
-                    Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy Pipeline" button and select `Web RAG`.
+                    Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy New Pipeline" button and select `Web RAG`.
                   </div>
                 )}
               </span>
@@ -85,15 +91,20 @@ export default function SearchPage() {
               type="text"
               id="apiUrl"
               name="apiUrl"
+              disabled={true}
               value={apiUrl}
               onChange={(e) => handleApiUrlChange(e.target.value)}
-              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+              className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm cursor-not-allowed"
             />
           </div>
         </div>
       </div>
       
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
+        {/* Add the Sidebar component before the main content area */}
+        <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
+          <Sidebar apiUrl={apiUrl} userId={userId} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments}/>
+        </div>
 
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
