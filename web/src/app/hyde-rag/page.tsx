@@ -155,7 +155,7 @@ export default function SearchPage() {
                 </svg>
                 {tooltipVisible && (
                   <div style={{ width: '350px' }} className="absolute left-6 -top-2 bg-zinc-800 text-zinc-200 px-2 py-1 rounded text-xs z-10 pb-2 pt-2">
-                    Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy New Pipeline" button and select `Q&A RAG`.
+                    Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy New Pipeline" button and select `Q&A RAG`, `Web RAG`, or `HyDE RAG`.
                   </div>
                 )}
               </span>

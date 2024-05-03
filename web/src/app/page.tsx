@@ -6,23 +6,25 @@ const Index: React.FC = () => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [apiUrl, setApiUrl] = useState('');
   const [demo, setDemoType] = useState('');
-  console.log('demo = ', demo)
-  console.log('apiUrl = ', apiUrl)
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Get the demoType from the URL search parameters
-    const demoTypePassed = searchParams.get("demo-type");
-    if (demoTypePassed) {
-      setDemoType(demoTypePassed);
+    if (searchParams) {
+      // Get the demoType from the URL search parameters
+      const demoTypePassed = searchParams.get("demo-type");
+      if (demoTypePassed) {
+        setDemoType(demoTypePassed);
+      }
     }
   }, [searchParams]);
 
   useEffect(() => {
-    let localApiUrl = localStorage?.getItem("apiUrl") || '';
-    localApiUrl = searchParams.get("host-url") || localApiUrl;
-    if (localApiUrl) {
-      setApiUrl(localApiUrl);
+    if (searchParams) {
+      let localApiUrl = localStorage?.getItem("apiUrl") || '';
+      localApiUrl = searchParams.get("host-url") || localApiUrl;
+      if (localApiUrl) {
+        setApiUrl(localApiUrl);
+      }
     }
   }, [searchParams]);
 
@@ -38,38 +40,31 @@ const Index: React.FC = () => {
 
   // Navigate to the appropriate route based on the demo type or fetch the demo type if not provided
   const navigateToDemo = async () => {
-    if (demo) {
-      switch (demo) {
-        case 'qna-rag':
-        case 'web-rag':
-        case 'hyde-rag':
-          // Navigate to the corresponding route
-          window.location.href = `/${demo}`;
-          break;
-        case 'qna':
-        case 'web':
-        case 'hyde':
-          // Navigate to the corresponding route
-          window.location.href = `/${demo}-rag`;
-          break;
-        default:
-          throw new Error('Invalid demo type provided.');
-      }
-    } else {
-      try {
-        console.log('apiUrl = ', apiUrl)
+    let navDemo = demo;
+    if (demo === '') {
         const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
         console.log('response = ', response);
         const data = await response.json();
-        const fetchedDemoType = data.rag_pipeline;
-        if (fetchedDemoType) {
-          setDemoType(fetchedDemoType);
-        } else {
-          throw new Error('No demo type found.');
-        }
-      } catch (error) {
-        console.error('Error fetching demo type:', error);
-      }
+        navDemo = data.rag_pipeline;
+
+    } 
+    console.log('navDemo = ', navDemo)
+    
+    switch (navDemo) {
+      case 'qna-rag':
+      case 'web-rag':
+      case 'hyde-rag':
+        // Navigate to the corresponding route
+        window.location.href = `/${navDemo}`;
+        break;
+      case 'qna':
+      case 'web':
+      case 'hyde':
+        // Navigate to the corresponding route
+        window.location.href = `/${navDemo}-rag`;
+        break;
+      default:
+        alert('Invalid pipeline deployment for demo was provided.');
     }
   };
 
@@ -84,7 +79,14 @@ const Index: React.FC = () => {
             onMouseEnter={() => setTooltipVisible(true)}
             onMouseLeave={() => setTooltipVisible(false)}
           >
-            {/* Tooltip SVG and content here */}
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-zinc-400" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+            </svg>
+            {tooltipVisible && (
+              <div style={{ width: '350px' }} className="absolute left-6 -top-2 bg-zinc-800 text-zinc-200 px-2 py-1 rounded text-xs z-10 pb-2 pt-2">
+                Enter the URL where your pipeline is deployed. This is the URL where the R2R API is running.<br/><br/>To deploy a compatible pipeline, click on the "Deploy New Pipeline" button and select `Q&A RAG`, `Web RAG`, or `HyDE RAG`.
+              </div>
+            )}
           </span>
         </label>
         <div className="mt-1 relative rounded-2xl shadow-sm">
