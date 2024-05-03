@@ -1,12 +1,14 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from "next/navigation";
+import { Loader } from 'lucide-react';
 
 const Index: React.FC = () => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [apiUrl, setApiUrl] = useState('');
   const [demo, setDemoType] = useState('');
   const searchParams = useSearchParams();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (searchParams) {
@@ -40,35 +42,46 @@ const Index: React.FC = () => {
 
   // Navigate to the appropriate route based on the demo type or fetch the demo type if not provided
   const navigateToDemo = async () => {
-    let navDemo = demo;
-    if (demo === '') {
-        const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
-        console.log('response = ', response);
-        const data = await response.json();
-        navDemo = data.rag_pipeline;
+    setLoading(true); // Start loading
 
-    } 
-    console.log('navDemo = ', navDemo)
-    
-    switch (navDemo) {
-      case 'qna-rag':
-      case 'web-rag':
-      case 'hyde-rag':
-        // Navigate to the corresponding route
-        window.location.href = `/${navDemo}`;
-        break;
-      case 'qna':
-      case 'web':
-      case 'hyde':
-        // Navigate to the corresponding route
-        window.location.href = `/${navDemo}-rag`;
-        break;
-      default:
-        alert('Invalid pipeline deployment for demo was provided.');
-    }
+    let navDemo = demo;
+    try {
+      if (demo === '') {
+          const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
+          console.log('response = ', response);
+          const data = await response.json();
+          navDemo = data.rag_pipeline;
+
+      } 
+      console.log('navDemo = ', navDemo)
+      
+      switch (navDemo) {
+        case 'qna-rag':
+        case 'web-rag':
+        case 'hyde-rag':
+          // Navigate to the corresponding route
+          window.location.href = `/${navDemo}`;
+          break;
+        case 'qna':
+        case 'web':
+        case 'hyde':
+          // Navigate to the corresponding route
+          window.location.href = `/${navDemo}-rag`;
+          break;
+        default:
+          alert('Invalid pipeline deployment for demo was provided.');
+      }
+     } catch (error) {
+        console.error('Error during navigation:', error);
+        alert('An error occurred while trying to navigate.');
+      } finally {
+        setLoading(false); // Stop loading regardless of outcome
+      }
   };
 
-  
+  // const buttonStyle = `absolute inset-y-0 right-0 px-4 py-2 border border-transparent text-sm font-medium rounded-r-2xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''} min-w-[100px]`;
+  const buttonStyle = `flex justify-center items-center absolute inset-y-0 right-0 px-4 border border-transparent text-sm font-medium rounded-r-2xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''} min-w-[100px]`;
+
   return (
     <div className="flex h-screen bg-zinc-900 justify-center items-center">
       <div className="w-full max-w-[950px] px-4">
@@ -100,11 +113,14 @@ const Index: React.FC = () => {
           />
           <button
             type="button"
-            className="absolute inset-y-0 right-0 px-4 py-2 border border-transparent text-sm font-medium rounded-r-2xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className={buttonStyle}
             onClick={navigateToDemo}
+            disabled={loading}
           >
-            Continue
+            {loading ? <Loader className="animate-spin" /> : 'Continue'}
+            
           </button>
+
         </div>
       </div>
     </div>
