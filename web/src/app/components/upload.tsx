@@ -4,12 +4,12 @@ import { R2RClient } from '../../r2r-js-client';
 
 export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDocuments }) => {
   const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
     
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    if (fileInputRef.current && fileInputRef.current.files.length) {
+    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length) {
       setIsUploading(true);
       const files = fileInputRef.current.files;
       try {
@@ -17,11 +17,14 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
           throw new Error('API URL is not defined');
         }
         const client = new R2RClient(apiUrl);
-        const uploadedFiles = [];
+        const uploadedFiles: string[] = [];
         for (const file of files) {
+          if (!file) continue;
+          const name = file.name;
+          if (!name) continue;
           const metadata = { user_id: userId };
-          await client.uploadFile(file.name, file, metadata);
-          uploadedFiles.push(file.name);
+          await client.uploadFile(name, file, metadata);
+          uploadedFiles.push(name);
         }
         setUploadedDocuments([...uploadedDocuments, ...uploadedFiles]);
         alert("Success");
@@ -35,7 +38,9 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
   };
 
   const handleUploadButtonClick = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current){
+        fileInputRef.current.click();
+    }
   };
 
   return (
