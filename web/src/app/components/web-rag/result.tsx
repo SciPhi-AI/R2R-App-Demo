@@ -20,8 +20,6 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
   let timeout: NodeJS.Timeout;
 
   const parseStreaming = async (query, userId, apiUrl) => {
-    console.log('attempting to fetch....')
-    console.log('apiUrl=', apiUrl)
     const response = await fetch(`/api/rag-completion?query=${query}&userId=${userId}&apiUrl=${apiUrl}`, {
       method: "GET",
       headers: {
@@ -47,13 +45,11 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
       if (done) break;
       const chunk = decoder.decode(value);
       sink += chunk;
-      console.log('chunk=', chunk)
 
   
       if (sink.includes(SEARCH_END_TOKEN)) {
         let results = sink.split(SEARCH_END_TOKEN)[0]
         results = results.replace(SEARCH_START_TOKEN, "");
-        console.log('source results = ', results)
         setSources(results)
       }
   
@@ -88,6 +84,9 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
     debouncedParseStreaming();
 
     return () => {
+      setSources(null);
+      setMarkdown("");
+      
       controller.abort();
       clearTimeout(timeout);
     };

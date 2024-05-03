@@ -1,13 +1,13 @@
 "use client";
 import { Result } from "@/app/components/qna-rag/result";
 import { Search } from "@/app/components/search";
+import { Sidebar } from "@/app/components/sidebar";
 import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { R2RClient } from '../../r2r-js-client';
 
-export default function SearchPage() {
+export default function QnaPage() {
   const searchParams = useSearchParams();
   //@ts-ignore
   const query = decodeURIComponent(searchParams.get("q") || "");
@@ -25,8 +25,6 @@ export default function SearchPage() {
     return localData ? JSON.parse(localData) : [];
   });
 
-  const fileInputRef = useRef(null);
-  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("availableUserIds", JSON.stringify(availableUserIds));
@@ -42,22 +40,6 @@ export default function SearchPage() {
     }
   }, [availableUserIds]);
 
-  useEffect(() => {
-    const fetchUserDocuments = async () => {
-      try {
-        if (userId === "") return;
-        const response = await fetch(
-          `${apiUrl}/get_user_documents/?user_id=${userId}`
-        );
-        const data = await response.json();
-        setUploadedDocuments(data.document_ids);
-      } catch (error) {
-        console.error("Error fetching user documents:", error);
-      }
-    };
-
-    fetchUserDocuments();
-  }, [userId, apiUrl]);
 
   const handleUserIdChange = async (selectedUserId) => {
     if (selectedUserId === "new") {
@@ -67,50 +49,8 @@ export default function SearchPage() {
     } else {
       setUserId(selectedUserId);
     }
-
-    try {
-      const response = await fetch(
-        `${apiUrl}/get_user_documents/?user_id=${selectedUserId}`
-      );
-      const data = await response.json();
-      setUploadedDocuments(data.document_ids);
-    } catch (error) {
-      console.error("Error fetching user documents:", error);
-    }
   };
 
-  const handleDocumentUpload = async (event) => {
-    event.preventDefault();
-      // @ts-ignore
-      if (fileInputRef.current && fileInputRef.current.files.length) {
-      // @ts-ignore
-      const file = fileInputRef.current.files[0];
-      const metadata = {
-        user_id: userId,
-      };
-      setIsUploading(true);
-      try {
-        if (!apiUrl) {
-          throw new Error('API URL is not defined');
-        }
-        const client = new R2RClient(apiUrl);
-        await client.uploadFile(file.name, file, metadata);
-        // @ts-ignore
-        setUploadedDocuments([...uploadedDocuments, file.name]);
-        alert("Success");
-      } catch (error) {
-        console.error("Error uploading file:", error);
-        alert("Failed to upload file. Please try again.");
-      } finally {
-        setIsUploading(false);
-      }
-    }
-  };
-  
-  const handleUploadButtonClick = () => {
-    // @ts-ignore
-    fileInputRef.current.click();
-  };
 
   const handleApiUrlChange = (newApiUrl) => {
     setApiUrl(newApiUrl);
@@ -176,41 +116,7 @@ export default function SearchPage() {
       
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
         <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
-          <div className="flex items-center justify-between mb-6 pt-4">
-            <h2 className="text-lg text-ellipsis font-bold text-blue-500">
-              Documents
-            </h2>
-            <form onSubmit={handleDocumentUpload}>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                onChange={handleDocumentUpload}
-              />
-              <button
-                type="button"
-                onClick={handleUploadButtonClick}
-                disabled={isUploading}
-                className={`pl-2 pr-2 text-white py-2 px-4 rounded ${
-                  isUploading
-                    ? "bg-blue-400 cursor-not-allowed"
-                    : "bg-blue-500 hover:bg-blue-600"
-                }`}
-              >
-                {isUploading ? "Uploading..." : "Upload File"}
-              </button>
-            </form>
-          </div>
-          <div className="border-t border-white-600 mb-2"></div>
-        <div className="flex-grow overflow-auto max-h-[calc(100vh-260px)]">
-          <ul className="">
-            {uploadedDocuments?.map((document, index) => (
-              <li key={index} className="text-zinc-300 mt-2">
-                {document}
-              </li>
-            ))}
-          </ul>
-        </div>
+          <Sidebar apiUrl={apiUrl} userId={userId} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments}/>
       </div>
 
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">

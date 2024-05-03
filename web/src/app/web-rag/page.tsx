@@ -4,6 +4,7 @@ import { Search } from "@/app/components/search";
 import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
+import { Sidebar } from "@/app/components/sidebar";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -14,6 +15,7 @@ export default function SearchPage() {
     const localApiUrl = localStorage?.getItem("apiUrl");
     return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
   });
+  const [uploadedDocuments, setUploadedDocuments] = useState([]);
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [userId, setUserId] = useState("");
@@ -99,6 +101,10 @@ export default function SearchPage() {
       </div>
       
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
+        {/* Add the Sidebar component before the main content area */}
+        <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
+          <Sidebar apiUrl={apiUrl} userId={userId} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments}/>
+        </div>
 
         <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
