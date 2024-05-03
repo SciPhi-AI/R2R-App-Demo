@@ -7,6 +7,7 @@ import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
+
 export default function QnaPage() {
   const searchParams = useSearchParams();
   //@ts-ignore
@@ -133,6 +134,7 @@ export default function QnaPage() {
               userId={userId}
               apiUrl={apiUrl}
               uploadedDocuments={uploadedDocuments}
+              setUploadedDocuments={setUploadedDocuments}
             ></Result>
           </div>
           <div className="h-80 pointer-events-none w-full backdrop-filter absolute bottom-0 bg-gradient-to-b from-transparent to-zinc-900 [mask-image:linear-gradient(to_top,zinc-800,transparent)]"></div>

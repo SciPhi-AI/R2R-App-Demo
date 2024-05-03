@@ -2,6 +2,7 @@ import { Answer } from "@/app/components/answer";
 import { Sources } from "@/app/components/qna-rag/sources";
 import { FC, useEffect, useState } from "react";
 import { LLM_START_TOKEN, LLM_END_TOKEN, SEARCH_START_TOKEN, SEARCH_END_TOKEN } from "../../../r2r-js-client";
+import { UploadButton } from "../upload"; // Import the new component
 
 const markdownParse = (text: string) => {
   return text
@@ -13,7 +14,7 @@ const markdownParse = (text: string) => {
 };
 
 
-export const Result: FC<{ query: string; userId: string, apiUrl: string | undefined, uploadedDocuments: string[] }> = ({ query, userId, apiUrl, uploadedDocuments }) => {
+export const Result: FC<{ query: string; userId: string, apiUrl: string | undefined, uploadedDocuments: string[], setUploadedDocuments: any }> = ({ query, userId, apiUrl, uploadedDocuments, setUploadedDocuments }) => {
   const [sources, setSources] = useState<string | null>(null);
   const [markdown, setMarkdown] = useState<string>("");
   const [error, setError] = useState<number | null>(null);
@@ -99,8 +100,9 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
 
       {uploadedDocuments?.length === 0 && (
         <div className="absolute inset-4 flex items-center justify-center bg-white/40 backdrop-blur-sm">
-          <div className="p-4 bg-white shadow-2xl rounded text-blue-500 font-medium flex gap-4">
-            Please upload atleast one document to submit queries.
+          <div className="flex items-center p-4 bg-white shadow-2xl rounded text-blue-500 font-medium gap-4">
+            Please upload atleast one document to submit queries. <UploadButton userId={userId} apiUrl={apiUrl} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments} />
+
           </div>
         </div>
       )}
