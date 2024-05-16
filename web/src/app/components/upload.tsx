@@ -2,7 +2,7 @@
 import { useState, useRef } from "react";
 import { R2RClient } from '../../r2r-js-client';
 
-export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDocuments }) => {
+export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDocuments, setLogFetchID }) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +20,7 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
         let metadatas = [];
         for (const file of files) {
           if (!file) continue;
-          const fileId = await client.generateIdFromLabel(file.name);
+          const fileId = client.generateIdFromLabel(file.name);
           uploadedFiles.push({document_id: fileId, title: file.name});
           metadatas.push({ user_id: userId, title: file.name });
           const document_id = await client.getUserDocumentIds(userId);
@@ -28,6 +28,8 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
         await client.ingestFiles(metadatas, files);
         console.log('uploadedFiles = ', uploadedFiles)
         setUploadedDocuments([...uploadedDocuments, ...uploadedFiles]);
+        setLogFetchID(client.generateRunId());
+
         alert("Success");
       } catch (error) {
         console.error("Error uploading files:", error);

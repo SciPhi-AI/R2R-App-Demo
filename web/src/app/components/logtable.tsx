@@ -1,9 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { R2RClient } from "../../r2r-js-client";
 
-export function LogTable({ logs }) {
+export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: string}) {
   const [collapsedStates, setCollapsedStates] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedLogs, setSelectedLogs] = useState('ALL');
+  const [logs, setLogs] = useState([]);
   const logsPerPage = 1;
+
+  const fetchLogs = (client: R2RClient) => {
+    if (selectedLogs === "ALL") {
+      client.getLogs().then((data) => {
+        setLogs(data);
+      });
+    } else {
+      client.getLogs(selectedLogs.toLowerCase()).then((data) => {
+        setLogs(data);
+      });
+    }
+  };
+
+  useEffect(() => {
+    const client = new R2RClient(apiUrl);
+    setCurrentPage(1);
+    fetchLogs(client);    
+  }, [selectedLogs]);
+
+  console.log('logFetchID = ', logFetchID)
+  useEffect(() => {
+    const client = new R2RClient(apiUrl);
+    setCurrentPage(1);
+    fetchLogs(client);    
+  }, [logFetchID]);
+
+
 
   const toggleCollapse = (logIndex, entryIndex) => {
     const key = `${logIndex}-${entryIndex}`;
@@ -68,8 +98,22 @@ export function LogTable({ logs }) {
   const currentLogs = logs.slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage);
 
   return (
-    <div className="mt-8">
-      <h3 className="text-lg font-bold text-blue-500 pl-4">Logs</h3>
+      <div className="mt-8">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-bold text-blue-500 pl-4">Logs</h3>
+          <div className="flex space-x-4 pr-2">
+            {['ALL', 'RAG', 'INGESTION'].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setSelectedLogs(tab)}
+                className={`px-4 py-2 rounded ${selectedLogs === tab ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+      </div>
+
       <div className="flex justify-center mb-4">
         {Array.from({ length: totalPages }, (_, index) => (
           <button

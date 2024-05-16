@@ -133,11 +133,17 @@ export class R2RClient {
     return response.data;
   }
 
-  async getLogs(pipelineType?: string, filter?: string): Promise<any> {
+  async getLogs(pipelineType?: string): Promise<any> {
     const url = `${this.baseUrl}/get_logs/`;
-    // const data = { pipeline_type: pipelineType, filter };
-    const data = {};
-    const response: AxiosResponse = await axios.post(url, data);
+    const data = {"pipeline_type": pipelineType};
+    console.log('data = ', data)
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+    const response: AxiosResponse = await axios.post(url, data, config);
+
     function parseLogs(logs) {
       return logs.results.map(run => {
         const parsedEntries = run.entries.map(entry => {
@@ -174,14 +180,11 @@ export class R2RClient {
     return parseLogs(response.data);
   }
   
-  // Function to generate a random UUID (v4)
-  async generateRunId() {
+  generateRunId() {
     return uuidv4();
   }
 
-  // Function to generate a UUID (v5) from a label
-  async generateIdFromLabel(label) {
-    // Replace 'example.com' with the namespace you want to use
+  generateIdFromLabel(label) {
     const NAMESPACE_DNS = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
     return uuidv5(label, NAMESPACE_DNS);
   }

@@ -79,6 +79,7 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
                   if (!source) return <></>;
+                  const metadata = source.metadata;
                   return (
                     <span className="inline-block w-4">
                       <Popover>
@@ -95,10 +96,10 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                           className="max-w-screen-md flex flex-col gap-2 bg-zinc-800 shadow-transparent ring-zinc-600 border-zinc-600 ring-4 text-xs"
                         >
                           <div className="text-zinc-200 text-ellipsis overflow-hidden whitespace-nowrap font-medium">
-                            {source.title}
+                            {metadata?.title} {metadata?.documentid? - metadata?.documentid : ""}
                           </div>
                           <div className="flex gap-4">
-                            {source.primaryImageOfPage?.thumbnailUrl && (
+                            {/* {source.primaryImageOfPage?.thumbnailUrl && (
                               <div className="flex-none">
                                 <img
                                   className="rounded h-16 w-16"
@@ -107,15 +108,19 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                                   src={source.primaryImageOfPage?.thumbnailUrl}
                                 />
                               </div>
-                            )}
+                            )} */}
                             <div className="flex-1">
                               <div className="line-clamp-4 text-white break-words">
-                                {source.snippet}
+                                {metadata?.snippet ? metadata?.snippet : ""}
                               </div>
+                              <div className="line-clamp-4 text-white break-words">
+                                {metadata?.text ? metadata?.text : ""}
+                              </div>
+
                             </div>
                           </div>
 
-                          <div className="flex gap-2 items-center">
+                          {/* <div className="flex gap-2 items-center">
                             <div className="flex-1 overflow-hidden">
                               <div className="text-ellipsis text-blue-500 overflow-hidden whitespace-nowrap">
                                 <a
@@ -134,7 +139,7 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                                 src={`https://www.google.com/s2/favicons?domain=${source.link}&sz=${16}`}
                               />
                             </div>
-                          </div>
+                          </div> */}
                         </PopoverContent>
                       </Popover>
                     </span>

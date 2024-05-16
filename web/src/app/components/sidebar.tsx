@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { UploadButton } from "./upload";
 import { R2RClient } from "../../r2r-js-client";
 
-export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocuments }) {
+export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocuments, setLogFetchID }) {
 
   const client = new R2RClient(apiUrl);
 
@@ -12,6 +12,7 @@ export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocument
       client.getUserDocumentIds(userId).then((data) => {
         const documents = data.results.map(result => JSON.parse(result));
         setUploadedDocuments(documents);
+        setLogFetchID(client.generateRunId());
       }).catch(error => {
         console.error("Error fetching user documents:", error);
       });
@@ -41,7 +42,7 @@ export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocument
         <h2 className="text-lg text-ellipsis font-bold text-blue-500">
           Documents
         </h2>
-        <UploadButton userId={userId} apiUrl={apiUrl} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments} />
+        <UploadButton userId={userId} apiUrl={apiUrl} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments} setLogFetchID={setLogFetchID}/>
       </div>
       <div className="border-t border-white-600 mb-2"></div>
       <div className="flex-grow overflow-auto max-h-[calc(100vh-290px)]">
