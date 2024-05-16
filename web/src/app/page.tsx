@@ -44,15 +44,15 @@ const Index: React.FC = () => {
   const navigateToDemo = async () => {
     setLoading(true); // Start loading
 
-    let navDemo = demo;
+    let navDemo = 'qna-rag';
     try {
-      if (demo === '') {
-          const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
-          console.log('response = ', response);
-          const data = await response.json();
-          navDemo = data.rag_pipeline;
+      // if (demo === '') {
+      //     const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
+      //     console.log('response = ', response);
+      //     const data = await response.json();
+      //     navDemo = data.rag_pipeline;
 
-      } 
+      // } 
       console.log('navDemo = ', navDemo)
       
       switch (navDemo) {

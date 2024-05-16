@@ -48,6 +48,7 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
       const { value, done } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value);
+      console.log('received chunk:', chunk)
       sink += chunk;
   
       if (sink.includes(SEARCH_END_TOKEN)) {
@@ -56,13 +57,20 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
         setSources(results)
       }
   
-      if (true) {
-        let md = sink.split(LLM_START_TOKEN)[1]
-        if (md !== undefined) {
-          md = md.replace(LLM_END_TOKEN, "")
-          setMarkdown(markdownParse(md));
-        }
+      if (sink.includes(LLM_START_TOKEN)) {
+        console.log('sink:', sink);
+        let md = sink.split(LLM_START_TOKEN)[1];
+        setMarkdown(markdownParse(md));
       }
+  
+
+      // if (true) {
+      //   let md = sink.split(LLM_START_TOKEN)[1]
+      //   if (md !== undefined) {
+      //     md = md.replace(LLM_END_TOKEN, "")
+      //     setMarkdown(markdownParse(md));
+      //   }
+      // }
     }
     let md = sink.split(LLM_START_TOKEN)[1]
     if (md !== undefined) {
@@ -93,6 +101,7 @@ export const Result: FC<{ query: string; userId: string, apiUrl: string | undefi
   }, [query, userId]);
 
   // TOOD - Include the error component
+  console.log('markdown = ', markdown);
   return (
     <div className="flex flex-col gap-8">
       <Answer markdown={markdown} sources={sources}></Answer>

@@ -8,7 +8,6 @@ const SourceItem: FC<{ source: Source }> = ({
   source,
 }) => {
   const { id, score, metadata } = source;
-  
   return (
     <div
       className="relative text-xs py-3 px-3 bg-zinc-400 hover:bg-zinc-300 rounded-lg flex flex-col gap-2 max-w-full"
@@ -29,7 +28,17 @@ const SourceItem: FC<{ source: Source }> = ({
 };
 
 export const Sources: FC<{ sources: string | null }> = ({ sources }) => {
-  let parsedSources: Source[] = typeof sources === 'string' ? JSON.parse(sources) : sources;
+  let parsedSources: Source[] = [];
+  if (sources) {
+    let partiallyParsedSources = typeof sources === 'string' ? JSON.parse(sources) : sources;
+    
+    parsedSources = partiallyParsedSources.map(item => {
+        if (typeof item === 'string') {
+            return JSON.parse(item);
+        }
+        return item;
+    });
+  }
   
   return (
     <Wrapper

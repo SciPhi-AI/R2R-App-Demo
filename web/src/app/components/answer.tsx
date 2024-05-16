@@ -11,6 +11,7 @@ import { BookOpenText } from "lucide-react";
 import { FC } from "react";
 import Markdown from "react-markdown";
 
+
 function formatMarkdownNewLines(markdown: string) {
   return markdown.split('\\n').join('  \n').replace(/\[(\d+)]/g, '[$1]($1)').split(`"queries":`)[0].replace(/\\u[\dA-F]{4}/gi, (match: any) => {
     return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
@@ -21,7 +22,19 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
   markdown,
   sources,
 }) => {
-  let parsedSources:Source[]  = typeof sources === 'string' ? JSON.parse(sources) : sources;
+  let parsedSources: Source[] = [];
+  if (sources) { 
+
+    let partiallyParsedSources = typeof sources === 'string' ? JSON.parse(sources) : sources;
+    
+    // If the parsed sources contain stringified JSON objects, we need to parse them as well
+    parsedSources = partiallyParsedSources.map(item => {
+        if (typeof item === 'string') {
+            return JSON.parse(item);
+        }
+        return item;
+    });
+  }
 
   return (
     <Wrapper

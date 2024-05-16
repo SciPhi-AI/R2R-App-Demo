@@ -6,6 +6,8 @@ import { Title } from "@/app/components/title";
 import { useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { R2RClient } from "../../r2r-js-client";
+import { LogTable } from "@/app/components/logtable";
 
 
 export default function QnaPage() {
@@ -13,10 +15,7 @@ export default function QnaPage() {
   //@ts-ignore
   const query = decodeURIComponent(searchParams.get("q") || "");
   //@ts-ignore
-  const [apiUrl, setApiUrl] = useState(() => {
-    const localApiUrl = localStorage?.getItem("apiUrl");
-    return localApiUrl || process.env.NEXT_PUBLIC_API_URL;
-  });
+  const apiUrl = localStorage?.getItem("apiUrl");
 
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
@@ -25,7 +24,17 @@ export default function QnaPage() {
     const localData = localStorage?.getItem("availableUserIds");
     return localData ? JSON.parse(localData) : [];
   });
+  const [logs, setLogs] = useState([]);
 
+  useEffect(() => {
+    if (apiUrl) {
+      const client = new R2RClient(apiUrl);
+      client.getLogs().then((data) => {
+        console.log('logs = ', data);
+        setLogs(data); // Store logs in the state
+      });
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("availableUserIds", JSON.stringify(availableUserIds));
@@ -50,12 +59,6 @@ export default function QnaPage() {
     } else {
       setUserId(selectedUserId);
     }
-  };
-
-
-  const handleApiUrlChange = (newApiUrl) => {
-    setApiUrl(newApiUrl);
-    localStorage.setItem("apiUrl", newApiUrl);
   };
 
   return (
@@ -108,7 +111,6 @@ export default function QnaPage() {
               name="apiUrl"
               value={apiUrl}
               disabled={true}
-              onChange={(e) => handleApiUrlChange(e.target.value)}
               className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-2xl shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm cursor-not-allowed"
             />
           </div>
@@ -116,11 +118,11 @@ export default function QnaPage() {
       </div>
       
       <div className="mx-auto max-w-6xl absolute inset-4 md:inset-8 flex mt-20">
-        <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600">
+        <div className="w-64 bg-zinc-800 p-3 rounded-l-2xl border-2 border-zinc-600 mt-4">
           <Sidebar apiUrl={apiUrl} userId={userId} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments}/>
-      </div>
+        </div>
 
-        <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600">
+        <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600 mt-4">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
           <div className="px-4 md:px-8 pt-6 pb-24 h-full overflow-auto">
             <Title
@@ -143,6 +145,12 @@ export default function QnaPage() {
               <Search ></Search>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="mx-auto max-w-6xl mt-4 mb-12 absolute inset-4 md:inset-8" style={{ top: 'calc(95vh)' }}>
+
+        <div className="bg-zinc-800 rounded-2xl relative overflow-hidden border-2 border-zinc-600">
+          <LogTable logs={logs} />
         </div>
       </div>
     </div>

@@ -9,16 +9,16 @@ export default async function handler(req, res) {
 
   const jsonData = {
     message: queryObject.query,
-    filters: {
+    search_filters: JSON.stringify({
       user_id: queryObject.userId
-    },
-    settings: {},
-    generation_config: { "stream": true },
+    }),
+    search_limit: 10,
+    streaming: true,
+    // generation_config: { "stream": true },
   };
 
-  console.log("trying to curl = ", `${queryObject.apiUrl}/rag_completion/`)
   try {
-    const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag_completion/`, {
+    const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -26,6 +26,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify(jsonData)
     });
+    console.log("externalApiResponse = ", externalApiResponse)
 
     const readableStream = externalApiResponse.body;
 
@@ -35,6 +36,8 @@ export default async function handler(req, res) {
 
         while (true) {
           const { value, done } = await reader.read();
+          console.log("value = ", value)
+          console.log("done = ", done)
           if (done) break;
 
           controller.enqueue(value);
