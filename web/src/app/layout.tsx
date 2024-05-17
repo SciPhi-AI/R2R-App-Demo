@@ -7,8 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "SciPhi Basic RAG",
-  description:
-    "Robust AI Powered RAG.",
+  description: "Robust AI Powered RAG.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

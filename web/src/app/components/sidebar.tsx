@@ -3,27 +3,37 @@ import { useEffect } from "react";
 import { UploadButton } from "./upload";
 import { R2RClient } from "../../r2r-js-client";
 
-export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocuments, setLogFetchID }) {
-
+export function Sidebar({
+  userId,
+  apiUrl,
+  uploadedDocuments,
+  setUploadedDocuments,
+  setLogFetchID,
+}) {
   const client = new R2RClient(apiUrl);
 
   useEffect(() => {
     if (userId) {
-      client.getUserDocumentIds(userId).then((data) => {
-        const documents = data.results.map(result => JSON.parse(result));
-        setUploadedDocuments(documents);
-        setLogFetchID(client.generateRunId());
-      }).catch(error => {
-        console.error("Error fetching user documents:", error);
-      });
+      client
+        .getUserDocumentData(userId)
+        .then((documents) => {
+          // const documents = data.results.map(result => JSON.parse(result));
+          setUploadedDocuments(documents["results"]);
+          setLogFetchID(client.generateRunId());
+        })
+        .catch((error) => {
+          console.error("Error fetching user documents:", error);
+        });
     }
   }, [userId]);
 
   const deleteDocument = async (documentId) => {
     try {
-      await client.delete('document_id', documentId);
+      await client.delete("document_id", documentId);
       // Update the state to remove the deleted document
-      setUploadedDocuments(uploadedDocuments.filter(doc => doc.document_id !== documentId));
+      setUploadedDocuments(
+        uploadedDocuments.filter((doc) => doc.document_id !== documentId),
+      );
       alert("Document deleted successfully.");
     } catch (error) {
       console.error("Error deleting document:", error);
@@ -42,14 +52,25 @@ export function Sidebar({ userId, apiUrl, uploadedDocuments, setUploadedDocument
         <h2 className="text-lg text-ellipsis font-bold text-blue-500">
           Documents
         </h2>
-        <UploadButton userId={userId} apiUrl={apiUrl} uploadedDocuments={uploadedDocuments} setUploadedDocuments={setUploadedDocuments} setLogFetchID={setLogFetchID}/>
+        <UploadButton
+          userId={userId}
+          apiUrl={apiUrl}
+          uploadedDocuments={uploadedDocuments}
+          setUploadedDocuments={setUploadedDocuments}
+          setLogFetchID={setLogFetchID}
+        />
       </div>
       <div className="border-t border-white-600 mb-2"></div>
       <div className="flex-grow overflow-auto max-h-[calc(100vh-290px)]">
         <ul className="">
           {uploadedDocuments?.map((document, index) => (
-            <li key={index} className="flex justify-between items-center text-zinc-300 mt-2">
-              <span className="truncate">{abbreviateFileName(document.title)}</span>
+            <li
+              key={index}
+              className="flex justify-between items-center text-zinc-300 mt-2"
+            >
+              <span className="truncate">
+                {abbreviateFileName(document.title)}
+              </span>
               <button
                 onClick={() => deleteDocument(document.document_id)}
                 className="hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs"

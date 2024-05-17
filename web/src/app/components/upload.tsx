@@ -1,19 +1,29 @@
 "use client";
 import { useState, useRef } from "react";
-import { R2RClient } from '../../r2r-js-client';
+import { R2RClient } from "../../r2r-js-client";
 
-export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDocuments, setLogFetchID }) => {
+export const UploadButton = ({
+  userId,
+  apiUrl,
+  uploadedDocuments,
+  setUploadedDocuments,
+  setLogFetchID,
+}) => {
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDocumentUpload = async (event) => {
     event.preventDefault();
-    if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files.length) {
+    if (
+      fileInputRef.current &&
+      fileInputRef.current.files &&
+      fileInputRef.current.files.length
+    ) {
       setIsUploading(true);
       const files = Array.from(fileInputRef.current.files);
       try {
         if (!apiUrl) {
-          throw new Error('API URL is not defined');
+          throw new Error("API URL is not defined");
         }
         const client = new R2RClient(apiUrl);
         const uploadedFiles: any[] = [];
@@ -21,12 +31,12 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
         for (const file of files) {
           if (!file) continue;
           const fileId = client.generateIdFromLabel(file.name);
-          uploadedFiles.push({document_id: fileId, title: file.name});
+          uploadedFiles.push({ document_id: fileId, title: file.name });
           metadatas.push({ user_id: userId, title: file.name });
-          const document_id = await client.getUserDocumentIds(userId);
+          // const user_data = await client.getUserDocumentData(userId);
         }
         await client.ingestFiles(metadatas, files);
-        console.log('uploadedFiles = ', uploadedFiles)
+        console.log("uploadedFiles = ", uploadedFiles);
         setUploadedDocuments([...uploadedDocuments, ...uploadedFiles]);
         setLogFetchID(client.generateRunId());
 
@@ -47,7 +57,7 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
   };
 
   return (
-    <>
+    <div style={{ zIndex: 1000 }}>
       <form onSubmit={handleDocumentUpload}>
         <input
           type="file"
@@ -69,6 +79,6 @@ export const UploadButton = ({ userId, apiUrl, uploadedDocuments, setUploadedDoc
           {isUploading ? "Uploading..." : "Upload File(s)"}
         </button>
       </form>
-    </>
+    </div>
   );
 };

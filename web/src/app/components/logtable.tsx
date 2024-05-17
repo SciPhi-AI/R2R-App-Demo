@@ -1,10 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import { R2RClient } from "../../r2r-js-client";
 
-export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: string}) {
+export function LogTable({
+  apiUrl,
+  logFetchID,
+}: {
+  apiUrl: string;
+  logFetchID: string;
+}) {
   const [collapsedStates, setCollapsedStates] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedLogs, setSelectedLogs] = useState('ALL');
+  const [selectedLogs, setSelectedLogs] = useState("ALL");
   const [logs, setLogs] = useState([]);
   const logsPerPage = 1;
 
@@ -23,23 +29,21 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
   useEffect(() => {
     const client = new R2RClient(apiUrl);
     setCurrentPage(1);
-    fetchLogs(client);    
+    fetchLogs(client);
   }, [selectedLogs]);
 
-  console.log('logFetchID = ', logFetchID)
+  console.log("logFetchID = ", logFetchID);
   useEffect(() => {
     const client = new R2RClient(apiUrl);
     setCurrentPage(1);
-    fetchLogs(client);    
+    fetchLogs(client);
   }, [logFetchID]);
-
-
 
   const toggleCollapse = (logIndex, entryIndex) => {
     const key = `${logIndex}-${entryIndex}`;
-    setCollapsedStates(prevState => ({
+    setCollapsedStates((prevState) => ({
       ...prevState,
-      [key]: !prevState[key]
+      [key]: !prevState[key],
     }));
   };
 
@@ -48,22 +52,46 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
       return log.entries.map((entry, entryIndex) => {
         const key = `${logIndex}-${entryIndex}`;
         const isCollapsed = collapsedStates[key];
-        const contentHeight = entry.key === 'search_results' ? 'auto' : 'inherit';
+        const contentHeight =
+          entry.key === "search_results" ? "auto" : "inherit";
 
         return (
           <React.Fragment key={entryIndex}>
             <tr className="border-t border-gray-600">
-              <td className="px-4 py-2 text-white break-all align-top" style={{ width: '200px' }}>{entry.key.toUpperCase()}</td>
-              <td className="px-4 py-2 text-white break-all" style={{ maxHeight: contentHeight, overflow: 'hidden' }}>
-                {entry.key === 'search_results'  ? (
+              <td
+                className="px-4 py-2 text-white break-all align-top"
+                style={{ width: "200px" }}
+              >
+                {entry.key.toUpperCase()}
+              </td>
+              <td
+                className="px-4 py-2 text-white break-all"
+                style={{ maxHeight: contentHeight, overflow: "hidden" }}
+              >
+                {entry.key === "search_results" ? (
                   <>
-                    <div style={{ maxHeight: isCollapsed ? 'none' : '125px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        maxHeight: isCollapsed ? "none" : "125px",
+                        overflow: "hidden",
+                      }}
+                    >
                       <ul className="no-list-style">
                         {entry.value.length > 0 ? (
                           entry.value.map((result, idx) => (
                             <li key={idx} className={idx > 0 ? "pt-2" : ""}>
-                              {result?.metadata?.title && <p className="text-zinc-200"><strong>[{idx + 1}] </strong> Title: {result?.metadata?.title}</p>}
-                              {result?.metadata?.text && <p className="text-zinc-300">{result?.metadata?.text} {isCollapsed ? "": " ..."} </p>}
+                              {result?.metadata?.title && (
+                                <p className="text-zinc-200">
+                                  <strong>[{idx + 1}] </strong> Title:{" "}
+                                  {result?.metadata?.title}
+                                </p>
+                              )}
+                              {result?.metadata?.text && (
+                                <p className="text-zinc-300">
+                                  {result?.metadata?.text}{" "}
+                                  {isCollapsed ? "" : " ..."}{" "}
+                                </p>
+                              )}
                             </li>
                           ))
                         ) : (
@@ -75,11 +103,13 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
                       onClick={() => toggleCollapse(logIndex, entryIndex)}
                       className="text-blue-500 hover:underline mt-2"
                     >
-                      {isCollapsed ? 'Show Less' : 'Show More'}
+                      {isCollapsed ? "Show Less" : "Show More"}
                     </button>
                   </>
+                ) : typeof entry.value === "string" ? (
+                  entry.value
                 ) : (
-                  typeof entry.value === 'string' ? entry.value : JSON.stringify(entry.value, null, 2)
+                  JSON.stringify(entry.value, null, 2)
                 )}
               </td>
             </tr>
@@ -95,23 +125,26 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
   };
 
   const totalPages = Math.ceil(logs.length / logsPerPage);
-  const currentLogs = logs.slice((currentPage - 1) * logsPerPage, currentPage * logsPerPage);
+  const currentLogs = logs.slice(
+    (currentPage - 1) * logsPerPage,
+    currentPage * logsPerPage,
+  );
 
   return (
-      <div className="mt-8">
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold text-blue-500 pl-4">Logs</h3>
-          <div className="flex space-x-4 pr-2">
-            {['ALL', 'RAG', 'INGESTION'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSelectedLogs(tab)}
-                className={`px-4 py-2 rounded ${selectedLogs === tab ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
+    <div className="mt-8">
+      <div className="flex justify-between items-center">
+        <h3 className="text-2xl font-bold text-blue-500 pl-4">Logs</h3>
+        <div className="flex space-x-4 pr-2">
+          {["ALL", "RAG", "INGESTION"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setSelectedLogs(tab)}
+              className={`px-4 py-2 rounded ${selectedLogs === tab ? "bg-blue-500 text-white" : "bg-zinc-800 text-zinc-400"}`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="flex justify-center mb-4">
@@ -119,7 +152,7 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
           <button
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            className={`px-4 py-2 mx-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-zinc-800 text-zinc-400'}`}
+            className={`px-4 py-2 mx-1 rounded ${currentPage === index + 1 ? "bg-blue-500 text-white" : "bg-zinc-800 text-zinc-400"}`}
           >
             {index + 1}
           </button>
@@ -129,7 +162,12 @@ export function LogTable({apiUrl, logFetchID} : {apiUrl: string, logFetchID: str
         <table className="min-w-full bg-zinc-800 border border-gray-600">
           <thead>
             <tr className="border-b border-gray-600">
-              <th className="px-4 py-2 text-left text-white" style={{ width: '200px' }}>Key</th>
+              <th
+                className="px-4 py-2 text-left text-white"
+                style={{ width: "200px" }}
+              >
+                Key
+              </th>
               <th className="px-4 py-2 text-left text-white">Value</th>
             </tr>
           </thead>

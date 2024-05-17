@@ -1,57 +1,73 @@
 import url from "url";
+import { R2RClient } from "../../r2r-js-client/r2rClient";
 
 export const config = {
   runtime: "edge",
 };
 
-export default async function handler(req, res) {
+export default async function handler(req) {
   const queryObject = url.parse(req.url, true).query;
-
-  const jsonData = {
-    message: queryObject.query,
-    search_filters: JSON.stringify({
-      user_id: queryObject.userId
-    }),
-    search_limit: 10,
-    streaming: true,
-    // generation_config: { "stream": true },
-  };
+  const client = new R2RClient(queryObject.apiUrl);
+  const message = queryObject.query;
+  const searchFilters = queryObject.searchFilters
+    ? JSON.parse(queryObject.searchFilters)
+    : {};
+  const searchLimit = queryObject.searchLimit
+    ? parseInt(queryObject.searchLimit)
+    : 10;
+  const generationConfig = queryObject.generationConfig
+    ? JSON.parse(queryObject.generationConfig)
+    : {};
+  const streaming = true;
 
   try {
-    const externalApiResponse = await fetch(`${queryObject.apiUrl}/rag/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "text/event-stream"
-      },
-      body: JSON.stringify(jsonData)
-    });
-    console.log("externalApiResponse = ", externalApiResponse)
+    if (streaming) {
+      const responseStream = await client.rag(
+        message,
+        searchFilters,
+        searchLimit,
+        generationConfig,
+        streaming,
+      );
 
-    const readableStream = externalApiResponse.body;
+      const readableStream = new ReadableStream({
+        async start(controller) {
+          const reader = responseStream.getReader();
 
-    const readable = new ReadableStream({
-      async start(controller) {
-        const reader = readableStream.getReader();
+          try {
+            while (true) {
+              const { value, done } = await reader.read();
+              if (done) break;
+              controller.enqueue(value);
+            }
+          } catch (error) {
+            controller.error(error);
+          } finally {
+            controller.close();
+          }
+        },
+      });
 
-        while (true) {
-          const { value, done } = await reader.read();
-          console.log("value = ", value)
-          console.log("done = ", done)
-          if (done) break;
-
-          controller.enqueue(value);
-        }
-
-        controller.close();
-      }
-    });
-
-    return new Response(readable, {
-      headers: { 'Content-Type': 'text/plain' }
-    });
+      return new Response(readableStream, {
+        headers: { "Content-Type": "application/json" },
+      });
+    } else {
+      const response = await client.rag(
+        message,
+        searchFilters,
+        searchLimit,
+        generationConfig,
+        streaming,
+      );
+      return new Response(JSON.stringify(response), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
   } catch (error) {
-    console.error('Error fetching data', error);
-    res.status(500).json({ error: 'Error fetching data' });
+    console.error("Error fetching data", error);
+    return new Response(JSON.stringify({ error: "Error fetching data" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

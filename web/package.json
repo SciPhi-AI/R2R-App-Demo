@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint 'src/**/*.{js,jsx,ts,tsx}'",
+    "format": "prettier --write 'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "dependencies": {
     "@next/third-parties": "^14.0.4",
@@ -26,7 +27,8 @@
     "react-markdown": "^9.0.1",
     "tailwind-merge": "^2.2.0",
     "unist-builder": "^4.0.0",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "web-streams-polyfill": "^4.0.0"
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.10",

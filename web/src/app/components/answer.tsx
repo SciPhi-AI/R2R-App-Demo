@@ -11,11 +11,15 @@ import { BookOpenText } from "lucide-react";
 import { FC } from "react";
 import Markdown from "react-markdown";
 
-
 function formatMarkdownNewLines(markdown: string) {
-  return markdown.split('\\n').join('  \n').replace(/\[(\d+)]/g, '[$1]($1)').split(`"queries":`)[0].replace(/\\u[\dA-F]{4}/gi, (match: any) => {
-    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-  });
+  return markdown
+    .split("\\n")
+    .join("  \n")
+    .replace(/\[(\d+)]/g, "[$1]($1)")
+    .split(`"queries":`)[0]
+    .replace(/\\u[\dA-F]{4}/gi, (match: any) => {
+      return String.fromCharCode(parseInt(match.replace(/\\u/g, ""), 16));
+    });
 }
 
 export const Answer: FC<{ markdown: string; sources: string | null }> = ({
@@ -23,16 +27,16 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
   sources,
 }) => {
   let parsedSources: Source[] = [];
-  if (sources) { 
+  if (sources) {
+    let partiallyParsedSources =
+      typeof sources === "string" ? JSON.parse(sources) : sources;
 
-    let partiallyParsedSources = typeof sources === 'string' ? JSON.parse(sources) : sources;
-    
     // If the parsed sources contain stringified JSON objects, we need to parse them as well
-    parsedSources = partiallyParsedSources.map(item => {
-        if (typeof item === 'string') {
-            return JSON.parse(item);
-        }
-        return item;
+    parsedSources = partiallyParsedSources.map((item) => {
+      if (typeof item === "string") {
+        return JSON.parse(item);
+      }
+      return item;
     });
   }
 
@@ -49,32 +53,47 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
             <Markdown
               components={{
                 h1: ({ node, ...props }) => (
-                  <h1 style={{ color: 'white' }} {...props} />
+                  <h1 style={{ color: "white" }} {...props} />
                 ),
                 h2: ({ node, ...props }) => (
-                  <h2 style={{ color: 'white' }} {...props} />
+                  <h2 style={{ color: "white" }} {...props} />
                 ),
                 h3: ({ node, ...props }) => (
-                  <h3 style={{ color: 'white' }} {...props} />
+                  <h3 style={{ color: "white" }} {...props} />
                 ),
                 h4: ({ node, ...props }) => (
-                  <h4 style={{ color: 'white' }} {...props} />
+                  <h4 style={{ color: "white" }} {...props} />
                 ),
                 h5: ({ node, ...props }) => (
-                  <h5 style={{ color: 'white' }} {...props} />
+                  <h5 style={{ color: "white" }} {...props} />
                 ),
                 h6: ({ node, ...props }) => (
-                  <h6 style={{ color: 'white' }} {...props} />
+                  <h6 style={{ color: "white" }} {...props} />
                 ),
-                strong: ({node, ...props}) => (
-                  <strong style={{ color: 'white', fontWeight: 'bold' }} {...props} />
+                strong: ({ node, ...props }) => (
+                  <strong
+                    style={{ color: "white", fontWeight: "bold" }}
+                    {...props}
+                  />
                 ),
-                p: ({ node, ...props }) => <p style={{ color: 'white' }} {...props} />,
-                li: ({ node, ...props }) => <li style={{ color: 'white' }} {...props} />,
-                blockquote: ({ node, ...props }) => <blockquote style={{ color: 'white' }} {...props} />,
-                em: ({ node, ...props }) => <em style={{ color: 'white' }} {...props} />,
-                code: ({ node, ...props }) => <code style={{ color: 'white' }} {...props} />,
-                pre: ({ node, ...props }) => <pre style={{ color: 'white' }} {...props} />,
+                p: ({ node, ...props }) => (
+                  <p style={{ color: "white" }} {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li style={{ color: "white" }} {...props} />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote style={{ color: "white" }} {...props} />
+                ),
+                em: ({ node, ...props }) => (
+                  <em style={{ color: "white" }} {...props} />
+                ),
+                code: ({ node, ...props }) => (
+                  <code style={{ color: "white" }} {...props} />
+                ),
+                pre: ({ node, ...props }) => (
+                  <pre style={{ color: "white" }} {...props} />
+                ),
                 a: ({ node: _, ...props }) => {
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
@@ -96,7 +115,8 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                           className="max-w-screen-md flex flex-col gap-2 bg-zinc-800 shadow-transparent ring-zinc-600 border-zinc-600 ring-4 text-xs"
                         >
                           <div className="text-zinc-200 text-ellipsis overflow-hidden whitespace-nowrap font-medium">
-                            {metadata?.title} {metadata?.documentid? - metadata?.documentid : ""}
+                            {metadata?.title}{" "}
+                            {metadata?.documentid ? -metadata?.documentid : ""}
                           </div>
                           <div className="flex gap-4">
                             {/* {source.primaryImageOfPage?.thumbnailUrl && (
@@ -116,7 +136,6 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                               <div className="line-clamp-4 text-white break-words">
                                 {metadata?.text ? metadata?.text : ""}
                               </div>
-
                             </div>
                           </div>
 
@@ -148,7 +167,6 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
               }}
             >
               {formatMarkdownNewLines(markdown)}
-
             </Markdown>
           </div>
         ) : (
