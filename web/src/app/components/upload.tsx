@@ -46,6 +46,9 @@ export const UploadButton = ({
         alert("Failed to upload files. Please try again.");
       } finally {
         setIsUploading(false);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
       }
     }
   };

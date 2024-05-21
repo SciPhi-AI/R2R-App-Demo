@@ -12,6 +12,7 @@ export default async function handler(req) {
   const searchFilters = queryObject.searchFilters
     ? JSON.parse(queryObject.searchFilters)
     : {};
+  searchFilters["user_id"] = queryObject.user_id
   const searchLimit = queryObject.searchLimit
     ? parseInt(queryObject.searchLimit)
     : 10;
