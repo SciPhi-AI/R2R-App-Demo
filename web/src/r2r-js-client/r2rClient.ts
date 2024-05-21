@@ -13,14 +13,16 @@ export class R2RClient {
     const response = await fetch(url, {
       method,
       headers: {
-        "Content-Type": "application/json",
+        "Content-Type": method === "POST" ? "application/json" : undefined,
         ...headers,
       },
-      body: JSON.stringify(data),
+      body: method === "GET" ? undefined : JSON.stringify(data),
     });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      const errorText = await response.json()["detail"];
+      console.log('errorText = ', errorText);
+      throw new Error(`Error: ${response.status} - ${errorText}`);
     }
 
     return response.json();
@@ -42,9 +44,8 @@ export class R2RClient {
 
     formData.append("metadatas", JSON.stringify(metadatas));
 
-    // Check if ids is not provided or is an empty array, set it to null
     if (!ids || ids.length === 0) {
-      formData.append("ids", "null"); // Append the string "null" to ensure it is sent correctly
+      formData.append("ids", "null");
     } else {
       formData.append("ids", JSON.stringify(ids));
     }
@@ -55,7 +56,9 @@ export class R2RClient {
     });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      const errorJson = await response.json();
+      console.log('errorText = ', errorJson);
+      throw new Error(`${errorJson['detail']}`);
     }
 
     return response.json();
@@ -103,7 +106,9 @@ export class R2RClient {
       });
 
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        const errorText = await response.text();
+        console.log('errorText = ', errorText);
+        throw new Error(`Error: ${response.status} - ${errorText}`);
       }
 
       const reader = response.body?.getReader();
@@ -138,15 +143,7 @@ export class R2RClient {
 
   async getUserIds(): Promise<any> {
     const url = `${this.baseUrl}/get_user_ids/`;
-    const response = await fetch(url, {
-      method: "GET",
-    });
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.json();
+    return this.request(url, "GET", {});
   }
 
   async getLogs(pipelineType?: string, filter?: string): Promise<any> {
@@ -164,17 +161,16 @@ export class R2RClient {
         try {
           parsedValue = JSON.parse(entry.value);
         } catch (e) {
-          parsedValue = entry.value; // Keep as string if JSON parsing fails
+          parsedValue = entry.value;
         }
 
-        // Format search results if present
         if (entry.key === "search_results" && Array.isArray(parsedValue)) {
           parsedValue = parsedValue.map((result: any) => {
             let parsedResult;
             try {
               parsedResult = JSON.parse(result);
             } catch (e) {
-              parsedResult = result; // Keep as string if JSON parsing fails
+              parsedResult = result;
             }
             return parsedResult;
           });

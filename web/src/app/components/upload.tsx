@@ -43,7 +43,7 @@ export const UploadButton = ({
         alert("Success");
       } catch (error) {
         console.error("Error uploading files:", error);
-        alert("Failed to upload files. Please try again.");
+        alert(error);
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) {
