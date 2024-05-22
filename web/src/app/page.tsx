@@ -22,7 +22,7 @@ const Index: React.FC = () => {
 
   useEffect(() => {
     if (searchParams) {
-      let localApiUrl = localStorage?.getItem("apiUrl") || "";
+      let localApiUrl = localStorage?.getItem("apiUrl") || "http://0.0.0.0:8000";
       localApiUrl = searchParams.get("host-url") || localApiUrl;
       if (localApiUrl) {
         setApiUrl(localApiUrl);
@@ -44,7 +44,7 @@ const Index: React.FC = () => {
   const navigateToDemo = async () => {
     setLoading(true); // Start loading
 
-    let navDemo = "qna-rag";
+    let navDemo = "app";
     try {
       // if (demo === '') {
       //     const response = await fetch(`${apiUrl}/get_rag_pipeline_var/`);
@@ -56,7 +56,7 @@ const Index: React.FC = () => {
       console.log("navDemo = ", navDemo);
 
       switch (navDemo) {
-        case "qna-rag":
+        case "app":
         case "web-rag":
         case "hyde-rag":
           // Navigate to the corresponding route
