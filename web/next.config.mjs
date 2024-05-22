@@ -3,14 +3,14 @@ export default (phase, { defaultConfig }) => {
   /**
    * @type {import("next").NextConfig}
    */
-   return {
-      async rewrites() {
-        return [
-          {
-            source: "/query",
-            destination: "/api/proxy-query"
-          }
-        ];
-      }
-    };
-  }
+  return {
+    async rewrites() {
+      return [
+        {
+          source: "/query",
+          destination: "/api/proxy-query",
+        },
+      ];
+    },
+  };
+};

@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 function debounce(func, wait) {
   let timeout;
-  return function(...args) {
+  return function (...args) {
     const context = this;
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(context, args), wait);
@@ -16,10 +16,13 @@ export const Search: FC = () => {
   const [value, setValue] = useState("");
   const router = useRouter();
 
-  const navigateToSearch = useCallback(debounce((searchValue) => {
-    router.push(getSearchUrl(encodeURIComponent(searchValue)));
-  }, 50), [router]); // Adjust the delay as needed
-  
+  const navigateToSearch = useCallback(
+    debounce((searchValue) => {
+      router.push(getSearchUrl(encodeURIComponent(searchValue)));
+    }, 50),
+    [router],
+  ); // Adjust the delay as needed
+
   const handleSubmit = (e) => {
     e.preventDefault();
     if (value.trim()) {

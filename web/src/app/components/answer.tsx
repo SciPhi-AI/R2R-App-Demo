@@ -12,16 +12,40 @@ import { FC } from "react";
 import Markdown from "react-markdown";
 
 function formatMarkdownNewLines(markdown: string) {
-  return markdown.split('\\n').join('  \n').replace(/\[(\d+)]/g, '[$1]($1)').split(`"queries":`)[0].replace(/\\u[\dA-F]{4}/gi, (match: any) => {
-    return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-  });
+  return markdown
+    .split("\\n")
+    .join("  \n")
+    .replace(/\[(\d+)]/g, "[$1]($1)")
+    .split(`"queries":`)[0]
+    .replace(/\\u[\dA-F]{4}/gi, (match: any) => {
+      return String.fromCharCode(parseInt(match.replace(/\\u/g, ""), 16));
+    });
 }
+
+const parseSources = (sources: string | object) => {
+  if (typeof sources === "string") {
+    // Remove the leading and trailing double quotes and wrap the string in square brackets
+    const jsonArrayString = `[${sources.replace(/","/g, "},{")}]`;
+
+    try {
+      return JSON.parse(jsonArrayString);
+    } catch (error) {
+      console.error("Failed to parse sources:", error);
+      throw new Error("Invalid sources format");
+    }
+  }
+
+  return sources;
+};
 
 export const Answer: FC<{ markdown: string; sources: string | null }> = ({
   markdown,
   sources,
 }) => {
-  let parsedSources:Source[]  = typeof sources === 'string' ? JSON.parse(sources) : sources;
+  let parsedSources: Source[] = [];
+  if (sources) {
+    parsedSources = parseSources(sources);
+  }
 
   return (
     <Wrapper
@@ -36,36 +60,52 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
             <Markdown
               components={{
                 h1: ({ node, ...props }) => (
-                  <h1 style={{ color: 'white' }} {...props} />
+                  <h1 style={{ color: "white" }} {...props} />
                 ),
                 h2: ({ node, ...props }) => (
-                  <h2 style={{ color: 'white' }} {...props} />
+                  <h2 style={{ color: "white" }} {...props} />
                 ),
                 h3: ({ node, ...props }) => (
-                  <h3 style={{ color: 'white' }} {...props} />
+                  <h3 style={{ color: "white" }} {...props} />
                 ),
                 h4: ({ node, ...props }) => (
-                  <h4 style={{ color: 'white' }} {...props} />
+                  <h4 style={{ color: "white" }} {...props} />
                 ),
                 h5: ({ node, ...props }) => (
-                  <h5 style={{ color: 'white' }} {...props} />
+                  <h5 style={{ color: "white" }} {...props} />
                 ),
                 h6: ({ node, ...props }) => (
-                  <h6 style={{ color: 'white' }} {...props} />
+                  <h6 style={{ color: "white" }} {...props} />
                 ),
-                strong: ({node, ...props}) => (
-                  <strong style={{ color: 'white', fontWeight: 'bold' }} {...props} />
+                strong: ({ node, ...props }) => (
+                  <strong
+                    style={{ color: "white", fontWeight: "bold" }}
+                    {...props}
+                  />
                 ),
-                p: ({ node, ...props }) => <p style={{ color: 'white' }} {...props} />,
-                li: ({ node, ...props }) => <li style={{ color: 'white' }} {...props} />,
-                blockquote: ({ node, ...props }) => <blockquote style={{ color: 'white' }} {...props} />,
-                em: ({ node, ...props }) => <em style={{ color: 'white' }} {...props} />,
-                code: ({ node, ...props }) => <code style={{ color: 'white' }} {...props} />,
-                pre: ({ node, ...props }) => <pre style={{ color: 'white' }} {...props} />,
+                p: ({ node, ...props }) => (
+                  <p style={{ color: "white" }} {...props} />
+                ),
+                li: ({ node, ...props }) => (
+                  <li style={{ color: "white" }} {...props} />
+                ),
+                blockquote: ({ node, ...props }) => (
+                  <blockquote style={{ color: "white" }} {...props} />
+                ),
+                em: ({ node, ...props }) => (
+                  <em style={{ color: "white" }} {...props} />
+                ),
+                code: ({ node, ...props }) => (
+                  <code style={{ color: "white" }} {...props} />
+                ),
+                pre: ({ node, ...props }) => (
+                  <pre style={{ color: "white" }} {...props} />
+                ),
                 a: ({ node: _, ...props }) => {
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
                   if (!source) return <></>;
+                  const metadata = source.metadata;
                   return (
                     <span className="inline-block w-4">
                       <Popover>
@@ -82,10 +122,11 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                           className="max-w-screen-md flex flex-col gap-2 bg-zinc-800 shadow-transparent ring-zinc-600 border-zinc-600 ring-4 text-xs"
                         >
                           <div className="text-zinc-200 text-ellipsis overflow-hidden whitespace-nowrap font-medium">
-                            {source.title}
+                            {metadata?.title}{" "}
+                            {metadata?.documentid ? -metadata?.documentid : ""}
                           </div>
                           <div className="flex gap-4">
-                            {source.primaryImageOfPage?.thumbnailUrl && (
+                            {/* {source.primaryImageOfPage?.thumbnailUrl && (
                               <div className="flex-none">
                                 <img
                                   className="rounded h-16 w-16"
@@ -94,15 +135,18 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                                   src={source.primaryImageOfPage?.thumbnailUrl}
                                 />
                               </div>
-                            )}
+                            )} */}
                             <div className="flex-1">
                               <div className="line-clamp-4 text-white break-words">
-                                {source.snippet}
+                                {metadata?.snippet ? metadata?.snippet : ""}
+                              </div>
+                              <div className="line-clamp-4 text-white break-words">
+                                {metadata?.text ? metadata?.text : ""}
                               </div>
                             </div>
                           </div>
 
-                          <div className="flex gap-2 items-center">
+                          {/* <div className="flex gap-2 items-center">
                             <div className="flex-1 overflow-hidden">
                               <div className="text-ellipsis text-blue-500 overflow-hidden whitespace-nowrap">
                                 <a
@@ -121,7 +165,7 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                                 src={`https://www.google.com/s2/favicons?domain=${source.link}&sz=${16}`}
                               />
                             </div>
-                          </div>
+                          </div> */}
                         </PopoverContent>
                       </Popover>
                     </span>
@@ -130,7 +174,6 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
               }}
             >
               {formatMarkdownNewLines(markdown)}
-
             </Markdown>
           </div>
         ) : (
