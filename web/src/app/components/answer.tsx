@@ -22,22 +22,29 @@ function formatMarkdownNewLines(markdown: string) {
     });
 }
 
+const parseSources = (sources: string | object) => {
+  if (typeof sources === "string") {
+    // Remove the leading and trailing double quotes and wrap the string in square brackets
+    const jsonArrayString = `[${sources.replace(/","/g, "},{")}]`;
+
+    try {
+      return JSON.parse(jsonArrayString);
+    } catch (error) {
+      console.error("Failed to parse sources:", error);
+      throw new Error("Invalid sources format");
+    }
+  }
+
+  return sources;
+};
+
 export const Answer: FC<{ markdown: string; sources: string | null }> = ({
   markdown,
   sources,
 }) => {
   let parsedSources: Source[] = [];
   if (sources) {
-    let partiallyParsedSources =
-      typeof sources === "string" ? JSON.parse(sources) : sources;
-
-    // If the parsed sources contain stringified JSON objects, we need to parse them as well
-    parsedSources = partiallyParsedSources.map((item) => {
-      if (typeof item === "string") {
-        return JSON.parse(item);
-      }
-      return item;
-    });
+    parsedSources = parseSources(sources);
   }
 
   return (

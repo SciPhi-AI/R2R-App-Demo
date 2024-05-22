@@ -38,6 +38,7 @@ export default async function handler(req) {
           try {
             while (true) {
               const { value, done } = await reader.read();
+              console.log("streaming value = ", value);
               if (done) break;
               controller.enqueue(value);
             }

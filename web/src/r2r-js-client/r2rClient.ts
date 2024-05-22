@@ -1,7 +1,5 @@
 import { v4 as uuidv4, v5 as uuidv5 } from "uuid";
 
-type Metadata = Record<string, any>;
-
 export class R2RClient {
   private baseUrl: string;
 
@@ -9,37 +7,28 @@ export class R2RClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request(
-    url: string,
-    method: string,
-    data: any,
-    headers: Record<string, string> = {},
-  ): Promise<any> {
+  async ingestDocuments(documents: Record<string, any>[]): Promise<any> {
+    const url = `${this.baseUrl}/ingest_documents/`;
+    const data = { documents };
     const response = await fetch(url, {
-      ...headers,
-      ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
-      body: method === "GET" ? undefined : JSON.stringify(data),
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
 
     if (!response.ok) {
-      const errorText = await response.json()["detail"];
-      console.log("errorText = ", errorText);
-      throw new Error(`Error: ${response.status} - ${errorText}`);
+      throw new Error("Network response was not ok");
     }
 
     return response.json();
   }
 
-  async ingestDocuments(documents: Metadata[]): Promise<any> {
-    const url = `${this.baseUrl}/ingest_documents/`;
-    const data = { documents };
-    return this.request(url, "POST", data);
-  }
-
   async ingestFiles(
-    metadatas: Metadata[],
+    metadatas: Record<string, any>[],
     files: File[],
-    ids?: string[],
+    ids?: string[] | null,
   ): Promise<any> {
     const url = `${this.baseUrl}/ingest_files/`;
     const formData = new FormData();
@@ -50,10 +39,10 @@ export class R2RClient {
 
     formData.append("metadatas", JSON.stringify(metadatas));
 
-    if (!ids || ids.length === 0) {
-      formData.append("ids", "null");
-    } else {
+    if (ids !== undefined && ids !== null) {
       formData.append("ids", JSON.stringify(ids));
+    } else {
+      formData.append("ids", JSON.stringify(null));
     }
 
     const response = await fetch(url, {
@@ -62,9 +51,7 @@ export class R2RClient {
     });
 
     if (!response.ok) {
-      const errorJson = await response.json();
-      console.log("errorText = ", errorJson);
-      throw new Error(`${errorJson["detail"]}`);
+      throw new Error("Network response was not ok");
     }
 
     return response.json();
@@ -73,12 +60,24 @@ export class R2RClient {
   async getUserDocumentData(userId: string): Promise<any> {
     const url = `${this.baseUrl}/get_user_document_data/`;
     const data = { user_id: userId };
-    return this.request(url, "POST", data);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
   }
 
   async search(
     query: string,
-    searchFilters: Metadata = {},
+    searchFilters: Record<string, any> = {},
     searchLimit: number = 10,
   ): Promise<any> {
     const url = `${this.baseUrl}/search/`;
@@ -87,14 +86,26 @@ export class R2RClient {
       search_filters: JSON.stringify(searchFilters),
       search_limit: searchLimit,
     };
-    return this.request(url, "POST", data);
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
   }
 
   async rag(
     message: string,
-    searchFilters: Metadata = {},
+    searchFilters: Record<string, any> = {},
     searchLimit: number = 10,
-    generationConfig: Metadata = {},
+    generationConfig: Record<string, any> = {},
     streaming: boolean = false,
   ): Promise<any> {
     const url = `${this.baseUrl}/rag/`;
@@ -114,19 +125,17 @@ export class R2RClient {
         },
         body: JSON.stringify(data),
       });
-    
+
       if (!response.ok) {
-        const errorText = await response.text();
-        console.log("errorText = ", errorText);
-        throw new Error(`Error: ${response.status} - ${errorText}`);
+        throw new Error("Network response was not ok");
       }
-    
+
       const reader = response.body?.getReader();
-      if (reader) {
-        const stream = new ReadableStream({
-          async start(controller) {
-            try {
-              while (true) {
+      const stream = new ReadableStream({
+        async start(controller) {
+          try {
+            while (true) {
+              if (reader) {
                 const { done, value } = await reader.read();
                 if (done) {
                   controller.close();
@@ -134,77 +143,120 @@ export class R2RClient {
                 }
                 controller.enqueue(value);
               }
-            } catch (error) {
-              controller.error(error);
             }
-          },
-        });
-    
-        return stream;
-      } else {
-        throw new Error("Response body stream is not available.");
-      }
+          } catch (error) {
+            controller.error(error);
+          }
+        },
+      });
+
+      return stream;
     } else {
-      return this.request(url, "POST", data);
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+
+      return response.json();
     }
   }
 
   async delete(key: string, value: string): Promise<any> {
     const url = `${this.baseUrl}/delete/`;
     const data = { key, value };
-    return this.request(url, "DELETE", data);
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
   }
 
   async getUserIds(): Promise<any> {
     const url = `${this.baseUrl}/get_user_ids/`;
-    return this.request(url, "GET", {});
+    const response = await fetch(url, {
+      method: "GET",
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
   }
 
   async getLogs(pipelineType?: string, filter?: string): Promise<any> {
     const url = `${this.baseUrl}/get_logs/`;
     const data = { pipeline_type: pipelineType, filter };
-    const logs = await this.request(url, "POST", data);
-
-    return this.parseLogs(logs);
-  }
-
-  private parseLogs(logs: any): any {
-    return logs.results.map((run: any) => {
-      const parsedEntries = run.entries.map((entry: any) => {
-        let parsedValue;
-        try {
-          parsedValue = JSON.parse(entry.value);
-        } catch (e) {
-          parsedValue = entry.value;
-        }
-
-        if (entry.key === "search_results" && Array.isArray(parsedValue)) {
-          parsedValue = parsedValue.map((result: any) => {
-            let parsedResult;
-            try {
-              parsedResult = JSON.parse(result);
-            } catch (e) {
-              parsedResult = result;
-            }
-            return parsedResult;
-          });
-        }
-
-        return { key: entry.key, value: parsedValue };
-      });
-      return {
-        run_id: run.run_id,
-        run_type: run.run_type,
-        entries: parsedEntries,
-      };
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
     });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    const logs = await response.json();
+
+    function parseLogs(logs) {
+      return logs.results.map((run) => {
+        const parsedEntries = run.entries.map((entry) => {
+          let parsedValue;
+          try {
+            parsedValue = JSON.parse(entry.value);
+          } catch (e) {
+            parsedValue = entry.value; // Keep as string if JSON parsing fails
+          }
+
+          // Format search results if present
+          if (entry.key === "search_results" && Array.isArray(parsedValue)) {
+            parsedValue = parsedValue.map((result) => {
+              let parsedResult;
+              try {
+                parsedResult = JSON.parse(result);
+              } catch (e) {
+                parsedResult = result; // Keep as string if JSON parsing fails
+              }
+              return parsedResult;
+            });
+          }
+
+          return { key: entry.key, value: parsedValue };
+        });
+        return {
+          run_id: run.run_id,
+          run_type: run.run_type,
+          entries: parsedEntries,
+        };
+      });
+    }
+
+    return parseLogs(logs);
   }
 
-  generateRunId(): string {
+  generateRunId() {
     return uuidv4();
   }
 
-  generateIdFromLabel(label: string): string {
+  generateIdFromLabel(label: string) {
     const NAMESPACE_DNS = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
     return uuidv5(label, NAMESPACE_DNS);
   }

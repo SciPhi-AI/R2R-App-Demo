@@ -27,7 +27,7 @@ export const UploadButton = ({
         }
         const client = new R2RClient(apiUrl);
         const uploadedFiles: any[] = [];
-        let metadatas: { user_id: string; title: string; }[] = [];
+        let metadatas: { user_id: string; title: string }[] = [];
         for (const file of files) {
           if (!file) continue;
           const fileId = client.generateIdFromLabel(file.name);
@@ -35,6 +35,9 @@ export const UploadButton = ({
           metadatas.push({ user_id: userId, title: file.name });
           // const user_data = await client.getUserDocumentData(userId);
         }
+        console.log("metadatas = ", metadatas);
+        console.log("files = ", files);
+
         await client.ingestFiles(metadatas, files);
         console.log("uploadedFiles = ", uploadedFiles);
         setUploadedDocuments([...uploadedDocuments, ...uploadedFiles]);
