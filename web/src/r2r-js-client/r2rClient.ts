@@ -9,19 +9,21 @@ export class R2RClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request(url: string, method: string, data: any, headers: Record<string, string> = {}): Promise<any> {
+  private async request(
+    url: string,
+    method: string,
+    data: any,
+    headers: Record<string, string> = {},
+  ): Promise<any> {
     const response = await fetch(url, {
-      method,
-      headers: {
-        "Content-Type": method === "POST" ? "application/json" : undefined,
-        ...headers,
-      },
+      ...headers,
+      ...(method === "POST" ? { "Content-Type": "application/json" } : {}),
       body: method === "GET" ? undefined : JSON.stringify(data),
     });
 
     if (!response.ok) {
       const errorText = await response.json()["detail"];
-      console.log('errorText = ', errorText);
+      console.log("errorText = ", errorText);
       throw new Error(`Error: ${response.status} - ${errorText}`);
     }
 
@@ -34,7 +36,11 @@ export class R2RClient {
     return this.request(url, "POST", data);
   }
 
-  async ingestFiles(metadatas: Metadata[], files: File[], ids?: string[]): Promise<any> {
+  async ingestFiles(
+    metadatas: Metadata[],
+    files: File[],
+    ids?: string[],
+  ): Promise<any> {
     const url = `${this.baseUrl}/ingest_files/`;
     const formData = new FormData();
 
@@ -57,8 +63,8 @@ export class R2RClient {
 
     if (!response.ok) {
       const errorJson = await response.json();
-      console.log('errorText = ', errorJson);
-      throw new Error(`${errorJson['detail']}`);
+      console.log("errorText = ", errorJson);
+      throw new Error(`${errorJson["detail"]}`);
     }
 
     return response.json();
@@ -70,7 +76,11 @@ export class R2RClient {
     return this.request(url, "POST", data);
   }
 
-  async search(query: string, searchFilters: Metadata = {}, searchLimit: number = 10): Promise<any> {
+  async search(
+    query: string,
+    searchFilters: Metadata = {},
+    searchLimit: number = 10,
+  ): Promise<any> {
     const url = `${this.baseUrl}/search/`;
     const data = {
       query,
@@ -104,32 +114,36 @@ export class R2RClient {
         },
         body: JSON.stringify(data),
       });
-
+    
       if (!response.ok) {
         const errorText = await response.text();
-        console.log('errorText = ', errorText);
+        console.log("errorText = ", errorText);
         throw new Error(`Error: ${response.status} - ${errorText}`);
       }
-
+    
       const reader = response.body?.getReader();
-      const stream = new ReadableStream({
-        async start(controller) {
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) {
-                controller.close();
-                break;
+      if (reader) {
+        const stream = new ReadableStream({
+          async start(controller) {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
+                if (done) {
+                  controller.close();
+                  break;
+                }
+                controller.enqueue(value);
               }
-              controller.enqueue(value);
+            } catch (error) {
+              controller.error(error);
             }
-          } catch (error) {
-            controller.error(error);
-          }
-        },
-      });
-
-      return stream;
+          },
+        });
+    
+        return stream;
+      } else {
+        throw new Error("Response body stream is not available.");
+      }
     } else {
       return this.request(url, "POST", data);
     }

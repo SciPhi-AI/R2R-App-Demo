@@ -12,7 +12,8 @@ const SourceItem: FC<{ source: Source }> = ({ source }) => {
       key={id}
     >
       <div className="font-medium text-zinc-950 text-ellipsis overflow-hidden break-words">
-        Document Title: {metadata.title}, Similarity: {score.toFixed(3)}, Id = {id.slice(0, 8) + "..."}
+        Document Title: {metadata.title}, Similarity: {score.toFixed(3)}, Id ={" "}
+        {id.slice(0, 8) + "..."}
       </div>
       <div className="flex gap-2 items-center">
         <div className="flex-1 overflow-hidden">

@@ -27,7 +27,7 @@ export const UploadButton = ({
         }
         const client = new R2RClient(apiUrl);
         const uploadedFiles: any[] = [];
-        let metadatas = [];
+        let metadatas: { user_id: string; title: string; }[] = [];
         for (const file of files) {
           if (!file) continue;
           const fileId = client.generateIdFromLabel(file.name);
@@ -47,7 +47,7 @@ export const UploadButton = ({
       } finally {
         setIsUploading(false);
         if (fileInputRef.current) {
-          fileInputRef.current.value = '';
+          fileInputRef.current.value = "";
         }
       }
     }

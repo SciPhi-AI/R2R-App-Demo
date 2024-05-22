@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { R2RClient } from "../../r2r-js-client";
 
+class LogType {
+  run_id: string;
+  run_type: string;
+  entries: { key: string; value: any }[];
+}
+
 export function LogTable({
   apiUrl,
   logFetchID,
@@ -173,10 +179,10 @@ export function LogTable({
           </thead>
           <tbody>
             {currentLogs && currentLogs.length > 0 ? (
-              currentLogs.map((log, logIndex) => (
+              currentLogs.map((log: LogType, logIndex: number) => (
                 <React.Fragment key={logIndex}>
                   <tr className="bg-zinc-900 border-t border-gray-600">
-                    <td colSpan="2" className="px-4 py-2 text-blue-400">
+                    <td colSpan={2} className="px-4 py-2 text-blue-400">
                       Run ID: {log.run_id} (Type: {log.run_type.toUpperCase()})
                     </td>
                   </tr>
@@ -185,7 +191,7 @@ export function LogTable({
               ))
             ) : (
               <tr>
-                <td colSpan="2" className="px-4 py-2 text-center text-white">
+                <td colSpan={2} className="px-4 py-2 text-center text-white">
                   No logs available.
                 </td>
               </tr>
