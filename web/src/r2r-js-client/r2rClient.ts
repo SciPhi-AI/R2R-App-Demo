@@ -114,9 +114,10 @@ export class R2RClient {
       search_filters: JSON.stringify(searchFilters),
       search_limit: searchLimit,
       streaming,
-      generation_config: JSON.stringify(generationConfig),
+      rag_generation_config: JSON.stringify(generationConfig),
     };
-
+    console.log("generationConfig = ", generationConfig);
+    console.log("data = ", data);
     if (streaming) {
       const response = await fetch(url, {
         method: "POST",

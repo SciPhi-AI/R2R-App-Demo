@@ -3,7 +3,17 @@ import { getSearchUrl } from "@/app/utils/get-search-url";
 import { RefreshCcw } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export const Title = ({ query, userId }: { query: string; userId: string }) => {
+export const Title = ({
+  query,
+  userId,
+  model,
+  setModel,
+}: {
+  query: string;
+  userId: string;
+  model: string;
+  setModel: any;
+}) => {
   const router = useRouter();
 
   return (
@@ -22,6 +32,15 @@ export const Title = ({ query, userId }: { query: string; userId: string }) => {
         <div className="flex-1"></div>
       </div>
       <div className="flex-none flex">
+        <button
+          onClick={() => {
+            router.push(getSearchUrl(encodeURIComponent(query)));
+          }}
+          type="button"
+          className="rounded flex gap-2 items-center bg-transparent px-2 py-1 text-md font-semibold text-blue-500 hover:bg-zinc-900"
+        >
+          {model}
+        </button>
         <button
           onClick={() => {
             router.push(getSearchUrl(encodeURIComponent(query)));
