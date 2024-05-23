@@ -11,11 +11,13 @@ import { LogTable } from "@/app/components/logtable";
 
 const Index: React.FC = () => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [apiUrl, setApiUrl] = useState(localStorage?.getItem("apiUrl") || "");
-  const [demoActive, setDemoActive] = useState(
-    localStorage?.getItem("demoActive") == "true" || false,
-  );
+  // const [apiUrl, setApiUrl] = useState(localStorage?.getItem("apiUrl") || "");
+  // const [demoActive, setDemoActive] = useState(
+  //   localStorage?.getItem("demoActive") == "true" || false,
+  // );
 
+  const [apiUrl, setApiUrl] = useState(typeof window !== 'undefined' ? localStorage?.getItem("apiUrl") || "" : "");
+  const [demoActive, setDemoActive] = useState(typeof window !== 'undefined' ? localStorage?.getItem("demoActive") == "true" || false : false);
   const searchParams = useSearchParams();
 
   let query = "";
@@ -44,18 +46,36 @@ const Index: React.FC = () => {
     }
   }, [searchParams]);
 
+  // const handleApiUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   console.log("handling api url change...");
+
+  //   const newApiUrl = e.target.value;
+  //   setApiUrl(newApiUrl);
+  //   localStorage?.setItem("apiUrl", newApiUrl);
+  // };
+
+  // const handleDemoChange = () => {
+  //   console.log("handling demo change...");
+  //   setDemoActive(!demoActive);
+  //   localStorage?.setItem("demoActive", String(!demoActive));
+  // };
+
   const handleApiUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     console.log("handling api url change...");
 
     const newApiUrl = e.target.value;
     setApiUrl(newApiUrl);
-    localStorage.setItem("apiUrl", newApiUrl);
+    if (typeof window !== 'undefined') {
+      localStorage?.setItem("apiUrl", newApiUrl);
+    }
   };
 
   const handleDemoChange = () => {
     console.log("handling demo change...");
     setDemoActive(!demoActive);
-    localStorage.setItem("demoActive", String(!demoActive));
+    if (typeof window !== 'undefined') {
+      localStorage?.setItem("demoActive", String(!demoActive));
+    }
   };
 
   const buttonStyle = `flex justify-center items-center absolute inset-y-0 right-0 px-4 border border-transparent text-sm font-medium rounded-r-2xl text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500  min-w-[100px]`;

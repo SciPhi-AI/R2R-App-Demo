@@ -16,9 +16,9 @@ export default async function handler(req) {
   const searchLimit = queryObject.searchLimit
     ? parseInt(queryObject.searchLimit)
     : 10;
-  const generationConfig = { model: "ollama/llama2" }; // queryObject.generationConfig
-  // ? JSON.parse(queryObject.generationConfig)
-  // : {};
+  const generationConfig = queryObject.generationConfig
+    ? JSON.parse(queryObject.generationConfig)
+    : {};
   const streaming = true;
 
   try {
@@ -38,6 +38,7 @@ export default async function handler(req) {
           try {
             while (true) {
               const { value, done } = await reader.read();
+              console.log("streaming value = ", value);
               if (done) break;
               controller.enqueue(value);
             }
