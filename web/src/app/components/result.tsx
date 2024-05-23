@@ -69,7 +69,6 @@ export const Result: FC<{
       const { value, done } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value);
-      console.log("adding chunk", chunk);
       sink += chunk;
 
       if (sink.includes(SEARCH_END_TOKEN)) {
