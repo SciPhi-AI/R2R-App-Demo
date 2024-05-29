@@ -5,11 +5,9 @@ import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../tailwind.config';
 
 const fullConfig = resolveConfig(tailwindConfig);
-
 Chart.register(ArcElement, Tooltip, Legend, Title);
 
 const textColor = fullConfig.theme.colors.gray[300];
-
 const defaultColors = [
   fullConfig.theme.colors.blue[500],
   fullConfig.theme.colors.red[500],
@@ -43,20 +41,28 @@ const PieChart = ({
   className?: string;
 }) => {
   const pieChartData = createPieChartData(data);
-
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'top',
+        position: 'left',
+        align: 'center',
         labels: {
           color: textColor,
+          boxWidth: 12,
+          padding: 20,
         },
       },
       title: {
         display: true,
         text: title,
         color: textColor,
+        font: {
+          size: 16,
+        },
+        padding: {
+            top: 50,
+        },
       },
       tooltip: {
         callbacks: {
