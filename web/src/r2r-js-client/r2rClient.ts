@@ -253,6 +253,13 @@ export class R2RClient {
     return parseLogs(logs);
   }
 
+  
+  async getAnalyticsData(metric) {
+    // TODO: Implement the actual API call here
+    // For now, return dummy data
+    return [0.1, 0.5, 0.9, 0.7, 0.3, 0.6, 0.4, 0.8, 0.2];
+  }
+
   generateRunId() {
     return uuidv4();
   }
