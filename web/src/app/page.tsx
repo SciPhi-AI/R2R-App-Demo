@@ -8,6 +8,7 @@ import { Title } from "@/app/components/title";
 import { Result } from "@/app/components/result";
 import { Search } from "@/app/components/search";
 import { LogTable } from "@/app/components/logtable";
+import { AnalyticsTable } from "@/app/components/analyticstable";
 
 const Index: React.FC = () => {
   const [tooltipVisible, setTooltipVisible] = useState(false);
@@ -144,7 +145,7 @@ const Index: React.FC = () => {
       </div>
     </div>
   ) : (
-    <div className="absolute inset-0 bg-zinc-900">
+    <div className="absolute inset-0 bg-zinc-900 pb-20">
       <div className="mx-auto max-w-6xl mb-12 absolute inset-4 md:inset-6">
         <div className="flex items-center justify-start">
           <button
@@ -335,6 +336,12 @@ const Index: React.FC = () => {
       <div className="mx-auto max-w-6xl mb-12 inset-4 md:inset-8">
         <div className="bg-zinc-800 mt-2 rounded-2xl relative overflow-hidden border-2 border-zinc-600">
           <LogTable apiUrl={apiUrl} logFetchID={logFetchID} />
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl mb-12 inset-4 md:inset-8">
+        <div className="bg-zinc-800 mt-2 rounded-2xl relative overflow-hidden border-2 border-zinc-600">
+          <AnalyticsTable apiUrl={apiUrl} />
         </div>
       </div>
     </div>

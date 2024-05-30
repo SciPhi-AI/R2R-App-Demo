@@ -256,6 +256,23 @@ export class R2RClient {
     return parseLogs(logs);
   }
 
+  
+  async getAnalytics(): Promise<any> {
+    const url = `${this.baseUrl}/analytics/`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
+  }
+
   generateRunId() {
     return uuidv4();
   }

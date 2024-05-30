@@ -17,9 +17,25 @@ const config: Config = {
         blue: {
           500: "#2F80ED",
         },
+        red: {
+          500: "#FF6384",
+        },
+        yellow: {
+          500: "#FFCD56",
+        },
+        teal: {
+          500: "#36A2EB",
+        },
+        purple: {
+          500: "#9C27B0",
+        },
+        orange: {
+          500: "#FF9F40",
+        },
       },
     },
   },
   plugins: [require("@tailwindcss/typography")],
 };
+
 export default config;
