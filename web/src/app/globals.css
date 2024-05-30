@@ -18,3 +18,22 @@ select:-webkit-autofill:focus {
 body {
   background-color: #18181b; /* bg-zinc-900 */
 }
+
+/* styles.css */
+.scrollbar-always-visible {
+  overflow-y: scroll;
+  scrollbar-width: thin; /* Firefox */
+}
+
+.scrollbar-always-visible::-webkit-scrollbar {
+  width: 12px; /* Adjust the width of the scrollbar */
+}
+
+.scrollbar-always-visible::-webkit-scrollbar-thumb {
+  background-color: #888; /* Color of the scrollbar */
+  border-radius: 10px; /* Rounded corners for the scrollbar */
+}
+
+.scrollbar-always-visible::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Color when hovering over the scrollbar */
+}

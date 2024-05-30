@@ -22,6 +22,7 @@ export const Result: FC<{
   query: string;
   userId: string;
   apiUrl: string | undefined;
+  model: string;
   uploadedDocuments: string[];
   setUploadedDocuments: any;
   setLogFetchID: any;
@@ -29,6 +30,7 @@ export const Result: FC<{
   query,
   userId,
   apiUrl,
+  model,
   uploadedDocuments,
   setUploadedDocuments,
   setLogFetchID,
@@ -43,7 +45,7 @@ export const Result: FC<{
     setSources(null);
     setMarkdown("");
     const response = await fetch(
-      `/api/rag-completion?query=${query}&userId=${userId}&apiUrl=${apiUrl}`,
+      `/api/rag-completion?query=${query}&userId=${userId}&apiUrl=${apiUrl}&model=${model}`,
       {
         method: "GET",
         headers: {
@@ -70,6 +72,7 @@ export const Result: FC<{
       if (done) break;
       const chunk = decoder.decode(value);
       sink += chunk;
+      console.log("sink = ", sink);
 
       if (sink.includes(SEARCH_END_TOKEN)) {
         let results = sink.split(SEARCH_END_TOKEN)[0];

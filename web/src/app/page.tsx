@@ -16,8 +16,14 @@ const Index: React.FC = () => {
   //   localStorage?.getItem("demoActive") == "true" || false,
   // );
 
-  const [apiUrl, setApiUrl] = useState(typeof window !== 'undefined' ? localStorage?.getItem("apiUrl") || "" : "");
-  const [demoActive, setDemoActive] = useState(typeof window !== 'undefined' ? localStorage?.getItem("demoActive") == "true" || false : false);
+  const [apiUrl, setApiUrl] = useState(
+    typeof window !== "undefined" ? localStorage?.getItem("apiUrl") || "" : "",
+  );
+  const [demoActive, setDemoActive] = useState(
+    typeof window !== "undefined"
+      ? localStorage?.getItem("demoActive") == "true" || false
+      : false,
+  );
   const searchParams = useSearchParams();
 
   let query = "";
@@ -31,8 +37,10 @@ const Index: React.FC = () => {
   const client = new R2RClient(apiUrl);
   const [logFetchID, setLogFetchID] = useState(client.generateRunId());
 
-  const [model, setModel] = useState("ollama/llama2");
+  const [model, setModel] = useState("gpt-4-turbo");
   const [uploadedDocuments, setUploadedDocuments] = useState([]);
+  console.log("uploadedDocuments = ", uploadedDocuments);
+  console.log("uploadedDocuments.length = ", uploadedDocuments.length);
   const userId = "063edaf8-3e63-4cb9-a4d6-a855f36376c3";
 
   useEffect(() => {
@@ -65,7 +73,7 @@ const Index: React.FC = () => {
 
     const newApiUrl = e.target.value;
     setApiUrl(newApiUrl);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage?.setItem("apiUrl", newApiUrl);
     }
   };
@@ -73,7 +81,7 @@ const Index: React.FC = () => {
   const handleDemoChange = () => {
     console.log("handling demo change...");
     setDemoActive(!demoActive);
-    if (typeof window !== 'undefined') {
+    if (typeof window !== "undefined") {
       localStorage?.setItem("demoActive", String(!demoActive));
     }
   };
@@ -112,10 +120,6 @@ const Index: React.FC = () => {
               >
                 Enter the URL where your pipeline is deployed. This is the URL
                 where the R2R API is running.
-                <br />
-                <br />
-                To deploy a compatible pipeline, click on the "Deploy New
-                Pipeline" button and select `Q&A RAG`, `Web RAG`, or `HyDE RAG`.
               </div>
             )}
           </span>
@@ -216,11 +220,6 @@ const Index: React.FC = () => {
                   >
                     Enter the URL where your pipeline is deployed. This is the
                     URL where the R2R API is running.
-                    <br />
-                    <br />
-                    To deploy a compatible pipeline, click on the "Deploy New
-                    Pipeline" button and select `Q&A RAG`, `Web RAG`, or `HyDE
-                    RAG`.
                   </div>
                 )}
               </span>
@@ -292,10 +291,21 @@ const Index: React.FC = () => {
           />
         </div>
 
-        <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-hidden border-2 border-zinc-600 mt-4">
+        <div className="flex-1 bg-zinc-800 rounded-r-2xl relative overflow-y-scroll border-2 border-zinc-600 mt-4">
           <div className="h-20 pointer-events-none w-full backdrop-filter absolute top-0"></div>
           <div className="px-4 md:px-8 pt-6 pb-24 h-full overflow-auto max-h-[80vh]">
-            {" "}
+            <style jsx>{`
+              div::-webkit-scrollbar {
+                width: 10px;
+              }
+              div::-webkit-scrollbar-thumb {
+                background-color: #555;
+                border-radius: 5px;
+              }
+              div::-webkit-scrollbar-thumb:hover {
+                background: #333;
+              }
+            `}</style>{" "}
             {/* Apply max height here */}
             <Title
               query={query}
@@ -305,6 +315,7 @@ const Index: React.FC = () => {
             ></Title>
             <Result
               query={query}
+              model={model}
               userId={userId}
               apiUrl={apiUrl}
               uploadedDocuments={uploadedDocuments}

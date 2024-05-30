@@ -21,11 +21,12 @@ export const UploadButton = ({
     ) {
       setIsUploading(true);
       const files = Array.from(fileInputRef.current.files);
+      const client = new R2RClient(apiUrl);
+
       try {
         if (!apiUrl) {
           throw new Error("API URL is not defined");
         }
-        const client = new R2RClient(apiUrl);
         const uploadedFiles: any[] = [];
         let metadatas: { user_id: string; title: string }[] = [];
         for (const file of files) {
@@ -46,6 +47,7 @@ export const UploadButton = ({
         alert("Success");
       } catch (error) {
         console.error("Error uploading files:", error);
+        setLogFetchID(client.generateRunId());
         alert(error);
       } finally {
         setIsUploading(false);

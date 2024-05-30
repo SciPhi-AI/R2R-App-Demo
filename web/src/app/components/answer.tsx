@@ -22,20 +22,29 @@ function formatMarkdownNewLines(markdown: string) {
     });
 }
 
-const parseSources = (sources: string | object) => {
+const parseSources = (sources: string | object): Source[] => {
   if (typeof sources === "string") {
-    // Remove the leading and trailing double quotes and wrap the string in square brackets
-    const jsonArrayString = `[${sources.replace(/","/g, "},{")}]`;
+    // Split the string into individual JSON object strings
+    const individualSources = sources.split(',"{"').map((source, index) => {
+      if (index === 0) return source; // First element is already properly formatted
+      return `{"${source}`; // Wrap the subsequent elements with leading `{"`
+    });
+
+    // Wrap the individual sources in a JSON array format
+    const jsonArrayString = `[${individualSources.join(",")}]`;
 
     try {
-      return JSON.parse(jsonArrayString);
+      const partialParsedSources = JSON.parse(jsonArrayString);
+      return partialParsedSources.map((source: any) => {
+        return JSON.parse(source);
+      });
     } catch (error) {
       console.error("Failed to parse sources:", error);
       throw new Error("Invalid sources format");
     }
   }
 
-  return sources;
+  return sources as Source[];
 };
 
 export const Answer: FC<{ markdown: string; sources: string | null }> = ({
@@ -43,9 +52,12 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
   sources,
 }) => {
   let parsedSources: Source[] = [];
+  console.log("sources = ", sources);
   if (sources) {
     parsedSources = parseSources(sources);
   }
+  console.log("markdown = ", markdown);
+  console.log("formattedmd = ", formatMarkdownNewLines(markdown));
 
   return (
     <Wrapper
@@ -105,13 +117,19 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                   if (!props.href) return <></>;
                   const source = parsedSources[+props.href - 1];
                   if (!source) return <></>;
+                  console.log("source parsedSources = ", parsedSources);
+                  console.log("source = ", source);
                   const metadata = source.metadata;
+                  console.log("source metadata = ", metadata);
+                  // console.log('metadata = ', metadata);
+                  // console.log('title metadata = ', metadata.title);
+                  // console.log('props = ', props);
                   return (
                     <span className="inline-block w-4">
                       <Popover>
                         <PopoverTrigger asChild>
                           <span
-                            title={source.title}
+                            title={metadata?.title}
                             className="inline-block cursor-pointer transform scale-[60%] no-underline font-medium bg-zinc-700 hover:bg-zinc-500 w-6 text-center h-6 rounded-full origin-top-left"
                           >
                             {props.href}
@@ -122,8 +140,10 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                           className="max-w-screen-md flex flex-col gap-2 bg-zinc-800 shadow-transparent ring-zinc-600 border-zinc-600 ring-4 text-xs"
                         >
                           <div className="text-zinc-200 text-ellipsis overflow-hidden whitespace-nowrap font-medium">
-                            {metadata?.title}{" "}
-                            {metadata?.documentid ? -metadata?.documentid : ""}
+                            {metadata.title ? `Title: ${metadata.title}` : ""}
+                            {metadata?.documentid
+                              ? `, DocumentId: ${metadata.documentid.slice(0, 8)}`
+                              : ""}
                           </div>
                           <div className="flex gap-4">
                             {/* {source.primaryImageOfPage?.thumbnailUrl && (
@@ -137,15 +157,15 @@ export const Answer: FC<{ markdown: string; sources: string | null }> = ({
                               </div>
                             )} */}
                             <div className="flex-1">
-                              <div className="line-clamp-4 text-white break-words">
+                              <div className="line-clamp-4 text-zinc-300 break-words">
                                 {metadata?.snippet ? metadata?.snippet : ""}
                               </div>
-                              <div className="line-clamp-4 text-white break-words">
+                              <div className="line-clamp-4 text-zinc-300 break-words">
                                 {metadata?.text ? metadata?.text : ""}
                               </div>
                             </div>
                           </div>
-
+                          {/* {metadata.title} */}
                           {/* <div className="flex gap-2 items-center">
                             <div className="flex-1 overflow-hidden">
                               <div className="text-ellipsis text-blue-500 overflow-hidden whitespace-nowrap">
