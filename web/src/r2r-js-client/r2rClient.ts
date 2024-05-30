@@ -51,7 +51,10 @@ export class R2RClient {
     });
 
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      // console.log('response = ', response);
+      // console.log('response.json = ', await response.json());
+      const responseJson = await response.json();
+      throw new Error(responseJson.detail);
     }
 
     return response.json();

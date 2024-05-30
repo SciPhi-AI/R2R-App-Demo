@@ -6,11 +6,7 @@ import { FC } from "react";
 
 const SourceItem: FC<{ source: Source }> = ({ source }) => {
   const { id, score, metadata } = source;
-  // console.log('source = ', source);
-  // let loadedSource = JSON.parse(source);
-  // console.log('loadedSource = ', loadedSource);
-  // console.log('id = ', id);
-  // console.log('metadata = ', metadata);
+  console.log(" metadata = ", metadata);
 
   return (
     <div

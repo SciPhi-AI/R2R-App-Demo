@@ -17,7 +17,6 @@ export function Sidebar({
       client
         .getUserDocumentData(userId)
         .then((documents) => {
-          // const documents = data.results.map(result => JSON.parse(result));
           setUploadedDocuments(documents["results"]);
           setLogFetchID(client.generateRunId());
         })
@@ -47,7 +46,7 @@ export function Sidebar({
   };
 
   return (
-    <>
+    <div className="flex flex-col h-full">
       <div className="flex items-center justify-between mb-6 pt-4">
         <h2 className="text-lg text-ellipsis font-bold text-blue-500">
           Documents
@@ -61,19 +60,40 @@ export function Sidebar({
         />
       </div>
       <div className="border-t border-white-600 mb-2"></div>
-      <div className="flex-grow overflow-auto max-h-[calc(100vh-290px)]">
-        <ul className="">
+      <div
+        className="flex-grow overflow-y-scroll max-h-[calc(100vh-290px)]"
+        style={{
+          overflowY: "scroll",
+          scrollBehavior: "smooth",
+          msScrollbarBaseColor: "#888",
+          zIndex: 10,
+        }}
+      >
+        <style jsx>{`
+          div::-webkit-scrollbar {
+            width: 10px;
+          }
+          div::-webkit-scrollbar-thumb {
+            background-color: #555;
+            border-radius: 5px;
+          }
+          div::-webkit-scrollbar-thumb:hover {
+            background: #333;
+          }
+        `}</style>
+        <ul>
           {uploadedDocuments?.map((document, index) => (
             <li
               key={index}
               className="flex justify-between items-center text-zinc-300 mt-2"
+              // style={{ zIndex: 10 }}
             >
               <span className="truncate">
                 {abbreviateFileName(document.title)}
               </span>
               <button
                 onClick={() => deleteDocument(document.document_id)}
-                className="hover:bg-red-700 text-white font-bold py-1 px-2 rounded text-xs"
+                className="hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
               >
                 x
               </button>
@@ -81,6 +101,6 @@ export function Sidebar({
           ))}
         </ul>
       </div>
-    </>
+    </div>
   );
 }

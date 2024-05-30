@@ -12,14 +12,16 @@ export default async function handler(req) {
   const searchFilters = queryObject.searchFilters
     ? JSON.parse(queryObject.searchFilters)
     : {};
-  searchFilters["user_id"] = queryObject.user_id;
+  searchFilters["user_id"] = queryObject.userId;
   const searchLimit = queryObject.searchLimit
     ? parseInt(queryObject.searchLimit)
     : 10;
-  const generationConfig = queryObject.generationConfig
-    ? JSON.parse(queryObject.generationConfig)
-    : {};
+  const model = queryObject.model ? queryObject.model : "gpt-4-turbo";
+
   const streaming = true;
+  const generationConfig = { model: model }; // , "stream": streaming};
+
+  console.log("generationConfig = ", generationConfig);
 
   try {
     if (streaming) {
@@ -38,7 +40,6 @@ export default async function handler(req) {
           try {
             while (true) {
               const { value, done } = await reader.read();
-              console.log("streaming value = ", value);
               if (done) break;
               controller.enqueue(value);
             }
