@@ -19,7 +19,7 @@ const defaultColors = [
   fullConfig.theme.colors.orange[500],
 ];
 
-const createHistogramData = (data, binSize, label) => {
+const createHistogramData = (data, label) => {
   if (!Array.isArray(data)) {
     console.error('Data passed to createHistogramData is not an array:', data);
     return {
@@ -28,14 +28,22 @@ const createHistogramData = (data, binSize, label) => {
     };
   }
 
-  const bins = Array.from({ length: Math.ceil(1 / binSize) + 1 }, (_, i) => i * binSize);
+  const max = Math.max(...data);
+  const binCount = max > 1 ? 10 : 10; // Always 10 bins
+  const binSize = max > 1 ? max / binCount : 0.1;
+
+  const bins = Array.from({ length: binCount }, (_, i) => i * binSize);
   const histogram = bins.map((bin, index) => {
-    const nextBin = bins[index + 1] ?? 1;
+    const nextBin = bins[index + 1] ?? max + binSize;
+    if (index === bins.length - 1) {
+      return data.filter(value => value >= bin && value <= max).length;
+    }
     return data.filter(value => value >= bin && value < nextBin).length;
   });
+
   return {
-    labels: bins.slice(0, -1).map((bin, index) => {
-      const nextBin = bins[index + 1];
+    labels: bins.map((bin, index) => {
+      const nextBin = bins[index + 1] ?? max;
       return `${bin.toFixed(1)} - ${nextBin.toFixed(1)}`;
     }),
     datasets: [
@@ -44,7 +52,7 @@ const createHistogramData = (data, binSize, label) => {
         backgroundColor: defaultColors[0],
         borderColor: defaultColors[0],
         borderWidth: 1,
-        data: histogram.slice(0, -1), // Ensure the data array is the same length as the labels
+        data: histogram,
         barPercentage: 1.0,
         categoryPercentage: 1.0,
       },
@@ -69,7 +77,7 @@ const BarChart = ({
   const validData = data && Array.isArray(data.datasets) && data.datasets.length > 0 && Array.isArray(data.datasets[0].data);
 
   const barChartData = isHistogram
-    ? createHistogramData(data, 0.1, label) // Directly create histogram data if needed
+    ? createHistogramData(data.datasets[0].data, 0.1, label)
     : {
         ...data,
         datasets: data.datasets ? data.datasets.map((dataset, index) => ({

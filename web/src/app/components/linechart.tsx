@@ -1,12 +1,14 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
+import 'chartjs-adapter-date-fns';
+import { enUS } from 'date-fns/locale';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../tailwind.config';
 
 const fullConfig = resolveConfig(tailwindConfig);
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, TimeScale);
 
 const textColor = fullConfig.theme.colors.gray[300];
 
@@ -27,23 +29,33 @@ const LineChart = ({
   yTitle = 'Y Axis',
   hasData = true,
   noDataMessage = 'No data available',
+  timeScale = false,
+  granularity = 'minute',
 }: {
-  data: { data: number[], label: string }[];
+  data: number[];
   labels: string[];
   title?: string;
   xTitle?: string;
   yTitle?: string;
   hasData?: boolean;
   noDataMessage?: string;
+  timeScale?: boolean;
+  granularity?: string;
 }) => {
+
+  const isEmpty = data.length === 0 || labels.length === 0;
+
   const lineChartData = {
-    labels,
-    datasets: data.map((dataset, index) => ({
-      ...dataset,
-      backgroundColor: defaultColors[index % defaultColors.length],
-      borderColor: defaultColors[index % defaultColors.length],
-      fill: false,
-    })),
+    labels: isEmpty ? [] : labels.slice(-10),
+    datasets: [
+      {
+        label: title,
+        data: isEmpty ? [] : data.slice(-10),
+        backgroundColor: defaultColors[0],
+        borderColor: defaultColors[0],
+        fill: false,
+      },
+    ],
   };
 
   const options = {
@@ -63,15 +75,24 @@ const LineChart = ({
       tooltip: {
         callbacks: {
           label: (context) => {
-            const label = context.dataset.label || '';
             const value = context.raw;
-            return `${label}: ${value}`;
+            return `${context.dataset.label}: ${value}`;
           },
         },
       },
     },
     scales: {
       x: {
+        type: timeScale ? 'time' : 'category',
+        time: {
+          unit: granularity,
+          tooltipFormat: 'yyyy-MM-dd HH:mm',
+          displayFormats: {
+            minute: 'yyyy-MM-dd HH:mm',
+            hour: 'yyyy-MM-dd HH:00',
+            day: 'yyyy-MM-dd',
+          },
+        },
         title: {
           display: true,
           text: xTitle,
@@ -79,9 +100,16 @@ const LineChart = ({
         },
         ticks: {
           color: textColor,
+          autoSkip: true,
+          maxTicksLimit: 10,
         },
         grid: {
           color: fullConfig.theme.colors.gray[800],
+        },
+        adapters: {
+          date: {
+            locale: enUS,
+          },
         },
       },
       y: {
@@ -103,9 +131,10 @@ const LineChart = ({
 
   return (
     <div className="relative">
-      <Line data={lineChartData} options={options} />
-      {!hasData && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+      {!isEmpty ? (
+        <Line data={lineChartData} options={options} />
+      ) : (
+        <div className="flex items-center justify-center bg-black bg-opacity-50 text-white h-64">
           {noDataMessage}
         </div>
       )}
