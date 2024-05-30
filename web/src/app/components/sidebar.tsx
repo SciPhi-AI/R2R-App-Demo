@@ -41,7 +41,7 @@ export function Sidebar({
   };
 
   const abbreviateFileName = (name, maxLength = 48) => {
-    if (name.length <= maxLength) return name;
+    if (!name || name.length <= maxLength) return name;
     return `${name.substring(0, maxLength - 3)}...`;
   };
 
@@ -82,7 +82,10 @@ export function Sidebar({
           }
         `}</style>
         <ul>
-          {uploadedDocuments?.map((document, index) => (
+          {uploadedDocuments?.map((document, index) => {
+            if (!document.title) return null;
+            console.log("document = ", document);
+            return (
             <li
               key={index}
               className="flex justify-between items-center text-zinc-300 mt-2"
@@ -98,7 +101,7 @@ export function Sidebar({
                 x
               </button>
             </li>
-          ))}
+          )})}
         </ul>
       </div>
     </div>
