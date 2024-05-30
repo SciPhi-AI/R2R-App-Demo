@@ -19,7 +19,15 @@ const defaultColors = [
   fullConfig.theme.colors.orange[500],
 ];
 
-const createHistogramData = (data: number[], binSize: number, label: string) => {
+const createHistogramData = (data, binSize, label) => {
+  if (!Array.isArray(data)) {
+    console.error('Data passed to createHistogramData is not an array:', data);
+    return {
+      labels: [],
+      datasets: []
+    };
+  }
+
   const bins = Array.from({ length: Math.ceil(1 / binSize) + 1 }, (_, i) => i * binSize);
   const histogram = bins.map((bin, index) => {
     const nextBin = bins[index + 1] ?? 1;
@@ -54,42 +62,21 @@ const BarChart = ({
   categoryPercentage = 0.8,
   isHistogram = false,
   isStacked = false,
-}: {
-  data: any[];
-  title?: string;
-  xTitle?: string;
-  yTitle?: string;
-  label?: string;
-  barPercentage?: number;
-  categoryPercentage?: number;
-  isHistogram?: boolean;
-  isStacked?: boolean;
+  hasData = true,
+  noDataMessage = 'No data available',
 }) => {
+  // Validate data structure
+  const validData = data && Array.isArray(data.datasets) && data.datasets.length > 0 && Array.isArray(data.datasets[0].data);
+
   const barChartData = isHistogram
-    ? createHistogramData(data, 0.1, label)
+    ? createHistogramData(data, 0.1, label) // Directly create histogram data if needed
     : {
-        labels: Array.isArray(data) && typeof data[0] === 'number'
-          ? data.map((_, index: number) => `Label ${index + 1}`)
-          : data.length > 0 && data[0]?.data ? data[0].data.map((_: any, index: number) => `Label ${index + 1}`) : [],
-        datasets: Array.isArray(data) && typeof data[0] === 'number'
-          ? [
-              {
-                label,
-                backgroundColor: defaultColors[0],
-                borderColor: defaultColors[0],
-                borderWidth: 1,
-                data,
-                barPercentage,
-                categoryPercentage,
-              },
-            ]
-          : data.map((dataset, index) => ({
-              ...dataset,
-              backgroundColor: defaultColors[index % defaultColors.length],
-              borderColor: defaultColors[index % defaultColors.length],
-              barPercentage,
-              categoryPercentage,
-            })),
+        ...data,
+        datasets: data.datasets ? data.datasets.map((dataset, index) => ({
+          ...dataset,
+          backgroundColor: defaultColors[index % defaultColors.length],
+          borderColor: defaultColors[index % defaultColors.length],
+        })) : [],
       };
 
   const options = {
@@ -149,7 +136,18 @@ const BarChart = ({
     },
   };
 
-  return <Bar data={barChartData} options={options} />;
+  return (
+    <div className="relative">
+      <Bar data={barChartData} options={options} />
+      {!hasData && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+          {noDataMessage}
+        </div>
+      )}
+    </div>
+  );
 };
+
+BarChart.createHistogramData = createHistogramData;
 
 export default BarChart;

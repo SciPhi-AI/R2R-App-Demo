@@ -254,10 +254,20 @@ export class R2RClient {
   }
 
   
-  async getAnalyticsData(metric) {
-    // TODO: Implement the actual API call here
-    // For now, return dummy data
-    return [0.1, 0.5, 0.9, 0.7, 0.3, 0.6, 0.4, 0.8, 0.2];
+  async getAnalytics(): Promise<any> {
+    const url = `${this.baseUrl}/analytics/`;
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+
+    return response.json();
   }
 
   generateRunId() {

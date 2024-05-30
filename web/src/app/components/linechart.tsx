@@ -1,12 +1,12 @@
 import React from 'react';
 import { Line } from 'react-chartjs-2';
-import { Chart, CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../tailwind.config';
 
 const fullConfig = resolveConfig(tailwindConfig);
 
-Chart.register(CategoryScale, LinearScale, LineElement, PointElement, Title, Tooltip, Legend);
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const textColor = fullConfig.theme.colors.gray[300];
 
@@ -19,33 +19,32 @@ const defaultColors = [
   fullConfig.theme.colors.orange[500],
 ];
 
-const createLineChartData = (datasets: { data: number[], label: string }[], labels: string[]) => {
-  return {
+const LineChart = ({
+  data,
+  labels,
+  title = 'Default Line Chart',
+  xTitle = 'X Axis',
+  yTitle = 'Y Axis',
+  hasData = true,
+  noDataMessage = 'No data available',
+}: {
+  data: { data: number[], label: string }[];
+  labels: string[];
+  title?: string;
+  xTitle?: string;
+  yTitle?: string;
+  hasData?: boolean;
+  noDataMessage?: string;
+}) => {
+  const lineChartData = {
     labels,
-    datasets: datasets.map((dataset, index) => ({
+    datasets: data.map((dataset, index) => ({
       ...dataset,
       backgroundColor: defaultColors[index % defaultColors.length],
       borderColor: defaultColors[index % defaultColors.length],
-      borderWidth: 2,
       fill: false,
     })),
   };
-};
-
-const LineChart = ({ 
-  data, 
-  labels,
-  title,
-  xTitle,
-  yTitle
-}: { 
-  data: { data: number[], label: string }[]; 
-  labels: string[];
-  title: string;
-  xTitle: string;
-  yTitle: string;
-}) => {
-  const lineChartData = createLineChartData(data, labels);
 
   const options = {
     responsive: true,
@@ -80,11 +79,9 @@ const LineChart = ({
         },
         ticks: {
           color: textColor,
-          maxRotation: 45,
-          minRotation: 45,
         },
         grid: {
-          offset: false,
+          color: fullConfig.theme.colors.gray[800],
         },
       },
       y: {
@@ -96,12 +93,24 @@ const LineChart = ({
         ticks: {
           color: textColor,
         },
+        grid: {
+          color: fullConfig.theme.colors.gray[800],
+        },
         beginAtZero: true,
       },
     },
   };
 
-  return <Line data={lineChartData} options={options} />;
+  return (
+    <div className="relative">
+      <Line data={lineChartData} options={options} />
+      {!hasData && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+          {noDataMessage}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default LineChart;

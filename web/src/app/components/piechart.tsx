@@ -1,13 +1,15 @@
 import React from 'react';
 import { Pie } from 'react-chartjs-2';
-import { Chart, ArcElement, Tooltip, Legend, Title } from 'chart.js';
+import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import resolveConfig from 'tailwindcss/resolveConfig';
 import tailwindConfig from '../../../tailwind.config';
 
 const fullConfig = resolveConfig(tailwindConfig);
-Chart.register(ArcElement, Tooltip, Legend, Title);
+
+Chart.register(ArcElement, Tooltip, Legend);
 
 const textColor = fullConfig.theme.colors.gray[300];
+
 const defaultColors = [
   fullConfig.theme.colors.blue[500],
   fullConfig.theme.colors.red[500],
@@ -17,68 +19,56 @@ const defaultColors = [
   fullConfig.theme.colors.orange[500],
 ];
 
-const createPieChartData = (data: { label: string; count: number }[]) => {
-  return {
-    labels: data.map(d => d.label),
+const PieChart = ({
+  data,
+  title = 'Default Pie Chart',
+  hasData = true,
+  noDataMessage = 'No data available',
+  className = '',
+}: {
+  data: { label: string; count: number }[];
+  title?: string;
+  hasData?: boolean;
+  noDataMessage?: string;
+  className?: string;
+}) => {
+  const pieChartData = {
+    labels: data.map((entry) => entry.label),
     datasets: [
       {
-        data: data.map(d => d.count),
+        data: data.map((entry) => entry.count),
         backgroundColor: data.map((_, index) => defaultColors[index % defaultColors.length]),
         borderColor: data.map((_, index) => defaultColors[index % defaultColors.length]),
         borderWidth: 1,
       },
     ],
   };
-};
 
-const PieChart = ({
-  data,
-  title,
-  className,
-}: {
-  data: { label: string; count: number }[];
-  title: string;
-  className?: string;
-}) => {
-  const pieChartData = createPieChartData(data);
   const options = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'left',
-        align: 'center',
+        position: 'top',
         labels: {
           color: textColor,
-          boxWidth: 12,
-          padding: 20,
         },
       },
       title: {
         display: true,
         text: title,
         color: textColor,
-        font: {
-          size: 16,
-        },
-        padding: {
-            top: 50,
-        },
-      },
-      tooltip: {
-        callbacks: {
-          label: (context) => {
-            const label = context.label || '';
-            const value = context.raw;
-            return `${label}: ${value}`;
-          },
-        },
       },
     },
   };
 
   return (
-    <div className={className}>
+    <div className={`relative ${className}`}>
       <Pie data={pieChartData} options={options} />
+      {!hasData && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-white">
+          {noDataMessage}
+        </div>
+      )}
     </div>
   );
 };
